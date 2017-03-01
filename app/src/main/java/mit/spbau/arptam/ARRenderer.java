@@ -1,5 +1,6 @@
 package mit.spbau.arptam;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
@@ -24,20 +25,25 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
 
   private SurfaceTexture mSTexture;
 
-  private boolean mUpdateST = false;
+  private volatile boolean mUpdateST = false;
 
-  private GLSurfaceView mView;
+  private final GLSurfaceView mView;
+  private final ARSystem mARSystem;
+  private final Gyroscope mGyroscope;
+  private final Geolocation mGeolocation;
 
   private CameraManager mCamera;
-  private ARSystem mARSystem;
 
-  ARRenderer(GLSurfaceView view, ARSystem arSystem) {
+  ARRenderer(Context context, GLSurfaceView view, ARSystem arSystem) {
     mView = view;
     mARSystem = arSystem;
+    mGyroscope = new Gyroscope(context);
+    mGeolocation = new Geolocation(context);
   }
 
   public void onResume() {
     mUpdateST = true;
+    mGeolocation.onResume();
     if (mCamera != null) {
       mCamera.onResume();
     }
@@ -45,9 +51,14 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
 
   public void onPause() {
     mUpdateST = false;
+    mGeolocation.onPause();
     if (mCamera != null) {
       mCamera.onPause();
     }
+  }
+
+  public void onDestroy() {
+    mGyroscope.stop();
   }
 
   public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -85,6 +96,8 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
     }
     mesh.render(shader, textureId);
     mARSystem.renderTrackingInfo();
+//    mGyroscope.getRotation();
+    mGeolocation.getLocation();
   }
 
   public void onSurfaceChanged(GL10 unused, int width, int height) {

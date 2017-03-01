@@ -26,7 +26,7 @@ public class ARActivity extends Activity {
 
     mGlView = new GLSurfaceView(this);
     mARSystem = new ARSystem(PREVIEW_SIZE.getWidth(), PREVIEW_SIZE.getHeight());
-    mRenderer = new ARRenderer(mGlView, mARSystem);
+    mRenderer = new ARRenderer(this, mGlView, mARSystem);
     mGlView.setEGLContextClientVersion(2);
     mGlView.setRenderer(mRenderer);
     mGlView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
@@ -71,6 +71,12 @@ public class ARActivity extends Activity {
   protected void onPause() {
     mRenderer.onPause();
     super.onPause();
+  }
+
+  @Override
+  protected void onDestroy() {
+    mRenderer.onDestroy();
+    super.onDestroy();
   }
 
   static {

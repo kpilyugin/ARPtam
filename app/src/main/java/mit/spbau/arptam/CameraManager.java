@@ -66,19 +66,8 @@ public class CameraManager implements Camera.PreviewCallback {
     int pwidth = 640;
     int pheight = 480;
 
-			/*Log.d("BT200", Build.MODEL);
-      if(Build.MODEL.equalsIgnoreCase("embt2"))
-			{
-				Log.d("BT200", "low resolution");
-				pwidth = 640;
-				pheight = 480;
-			}*/
-
-
     Log.i("Camera", "Best FPS range: " + fpsRange[0] + "-" + fpsRange[1]);
     Log.i("Camera", "Size: " + pwidth + "x" + pheight);
-
-    //List<Size> csizes = mCamera.getParameters().getSupportedPreviewSizes();
 
     wbmodes = camparams.getSupportedWhiteBalance();
 
@@ -102,11 +91,6 @@ public class CameraManager implements Camera.PreviewCallback {
     if (camparams.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_OFF))
       camparams.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 
-//    String wbmode = preferences.getString("wbmode", "");
-//    if (!wbmode.equals("")) {
-//      camparams.setWhiteBalance(wbmode);
-//    }
-
     //set parameters
     mCamera.setDisplayOrientation(90);
     mCamera.setParameters(camparams);
@@ -115,7 +99,6 @@ public class CameraManager implements Camera.PreviewCallback {
     Camera.Size previewFrameSize = mCamera.getParameters().getPreviewSize();
     Log.i("actual size: ", "" + previewFrameSize.width + "x" + previewFrameSize.height);
 
-//    int test = mCamera.getParameters().getPreviewFormat();
     frameSize = previewFrameSize;
     int bPP = ImageFormat.getBitsPerPixel(imageFormat);
     int bufferSize = (int) (previewFrameSize.height * previewFrameSize.width * ((double) bPP / 8.0) * 1.5);
@@ -129,9 +112,6 @@ public class CameraManager implements Camera.PreviewCallback {
 
   @Override
   public void onPreviewFrame(byte[] data, Camera camera) {
-    if (data != mPreviewBuffers[0] && data != mPreviewBuffers[1]) {
-      throw new RuntimeException("Where on hell is this data from?!");
-    }
     camera.addCallbackBuffer(data == mPreviewBuffers[0] ? mPreviewBuffers[1] : mPreviewBuffers[0]);
     processFrame(data);
   }
