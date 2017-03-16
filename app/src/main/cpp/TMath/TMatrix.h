@@ -908,6 +908,18 @@ private:
     const Type* m_data;
 };
 
+template<typename Type>
+std::ostream& operator<<(std::ostream& os, const TMatrix<Type>& m) {
+    for (int i = 0; i < m.rows(); ++i) {
+        os << "[";
+        for (int j = 0; j < m.cols(); ++j) {
+            os << m(i, j) << (j < m.cols() - 1 ? ", " : " ]");
+        }
+        os << std::endl;
+    }
+    return os;
+}
+
 typedef TMatrix<float> TMatrixf;
 typedef TMatrix<double> TMatrixd;
 

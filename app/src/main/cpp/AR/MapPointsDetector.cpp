@@ -1,3 +1,4 @@
+#include <iostream>
 #include "MapPointsDetector.h"
 #include "LocationOptimizer.h"
 #include "MapProjector.h"
@@ -305,6 +306,7 @@ void MapPointsDetector::stopThread()
 
 void MapPointsDetector::addKeyFrame(const std::shared_ptr<KeyFrame> & keyFrame)
 {
+    std::cout << "MapPointsDetector::addKeyFrame" << std::endl;
     TMath_assert(keyFrame->map() == m_map);
     /*{
         std::lock_guard<std::mutex> lockSeeds(m_seedMutex); (void)lockSeeds;
@@ -757,6 +759,7 @@ float MapPointsDetector::_pdf(float x, float mean, float scale)
 
 void MapPointsDetector::_addPreparedPoint(Seed & seed, const TMath::TVectord & worldPoint)
 {
+    std::cout << "MapPointsDetector::_addPreparedPoint" << std::endl;
 
     std::shared_ptr<KeyFrame> keyFrame = seed.keyFrame.lock();
     if (!keyFrame)

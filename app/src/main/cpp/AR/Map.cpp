@@ -63,6 +63,7 @@ void Map::resetListener()
 
 std::shared_ptr<MapPoint> Map::createMapPoint(const TMath::TVectord & position)
 {
+    std::cout << "createMapPoint: position = " << position(0) << " " << position(1) << " " << position(2) << std::endl;
     std::shared_ptr<MapPoint> newMapPoint(new MapPoint(this, m_mapPoints.size(), position));
     {
         //std::lock_guard<std::mutex> locker(m_mutex_mapPoints); (void)locker;
@@ -361,10 +362,6 @@ Image<int> Map::getSmallImage(const Frame & frame) const
     }
     Painter::drawImage(m_casheSmallImageV, frame.imageLevel(level), Point2f(0.0f, 0.0f), levelSize.cast<float>());
     int sizeBlur = 3;
-    std::cout << "getSmallImage: size1 = " << m_casheSmallImageH.size().x <<
-            "size2 = " << m_casheSmallImageV.size().x
-
-            << std::endl;
     ImageProcessing::gaussianBlurX(m_casheSmallImageH, m_casheSmallImageV, sizeBlur / 2, sizeBlur / 6.0f);
     ImageProcessing::gaussianBlurY(m_casheSmallImageV, m_casheSmallImageH, sizeBlur / 2, sizeBlur / 6.0f);
     const uchar* data = m_casheSmallImageH.data();

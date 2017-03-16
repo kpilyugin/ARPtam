@@ -70,7 +70,7 @@ public:
     MapPointsDetector * mapPointsDetector() const;
     void setMapPointsDetector(MapPointsDetector * mapPointsDetector);
 
-    void deleteFaildedMapPoints();
+    void deleteFailedMapPoints();
 
     void projectMapPoints(PreviewFrame & previewFrame,
                           const PreviewFrame & prevPreviewFrame);

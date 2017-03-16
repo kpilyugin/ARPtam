@@ -33,7 +33,9 @@ public class Geolocation implements LocationListener {
   }
 
   public void onResume() {
-    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+    if (checkPermissions()) {
+      mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+    }
   }
 
   public void onPause() {

@@ -30,13 +30,13 @@ ARSystem::ARSystem() :
     m_numberPointsForStructureOptimization = 30;
     m_numberIterationsForStructureOptimization = 10;
     m_toleranceOfCreatingFrames = 0.15;
-    m_minNumberTrackingPoints = 15;
+    m_minNumberTrackingPoints = 5;
     m_preferredNumberTrackingPoints = 25;
     m_maxCountKeyFrames = 10;
     m_trackingState = TrackingState::Undefining;
     m_trackingQuality = TrackingQuality::Ugly;
     m_cameraParameters = Camera::defaultCameraParameters;
-    //m_candidatesDetector.startThread();
+    m_candidatesDetector.startThread();
     m_currentImagePyramid.resize(m_map.countImageLevels());
     m_lastFrame = new PreviewFrame(m_camera, m_currentImagePyramid, TMatrixd::Identity(3),
                                    TVectord::create(0.0, 0.0, 0.0));
@@ -208,13 +208,13 @@ void ARSystem::setToleranceOfCreatingFrames(double toleranceOfCreatingFrames) {
     m_toleranceOfCreatingFrames = toleranceOfCreatingFrames;
 }
 
-int ARSystem::numberPointsForSructureOptimization() const {
+int ARSystem::numberPointsForStructureOptimization() const {
     std::lock_guard<std::mutex> lock(m_mutex);
     (void) lock;
     return m_numberPointsForStructureOptimization;
 }
 
-void ARSystem::setNumberPointsForSructureOptimization(int numberPointsForSructureOptimization) {
+void ARSystem::setNumberPointsForStructureOptimization(int numberPointsForSructureOptimization) {
     std::lock_guard<std::mutex> lock(m_mutex);
     (void) lock;
     m_numberPointsForStructureOptimization = numberPointsForSructureOptimization;
@@ -349,11 +349,17 @@ void ARSystem::renderTrackingInfo() {
             m_trackerRenderer.renderLine(a, b, blue);
         }
     } else if (m_trackingState == TrackingState::Tracking) {
+        size_t mapPoints = m_map.countMapPoints();
+//        std::cout << "tracking: num map points = " << mapPoints << std::endl;
+        for (size_t i = 0; i < mapPoints; ++i) {
+            const std::shared_ptr<MapPoint>& point = m_map.mapPoint(i);
+        }
+        
         auto currentFeatures =  m_lastFrame->previewFeatures();
         Point2f delta0(5.0f, 5.0f), delta1(-5.0f, -5.0f);
         Point2f delta2(5.0f, -5.0f), delta3(-5.0f, 5.0f);
         Point2f c0, c1, c2, c3;
-        std::cout << "tracking: num features = " << currentFeatures.size() << std::endl;
+//        std::cout << "tracking: num features = " << currentFeatures.size() << std::endl;
         for (std::size_t i = 0; i < currentFeatures.size(); ++i) {
             const Point2f& currentF = currentFeatures[i].positionOnFrame;
             c0 = currentF + delta0;
@@ -438,7 +444,7 @@ void ARSystem::_process(const ImageRef<uchar> &bwFrame) {
                 newFrame.setRotation(m_lastFrame->rotation());
                 newFrame.setTranslation(m_lastFrame->translation());
                 needNewFrame = false;
-                m_mapProjector.deleteFaildedMapPoints();
+                m_mapProjector.deleteFailedMapPoints();
                 break;
             } else if ((int) newFrame.countPreviewFeatures() < m_preferredNumberTrackingPoints) {
                 m_trackingQuality = TrackingQuality::Bad;
@@ -448,8 +454,8 @@ void ARSystem::_process(const ImageRef<uchar> &bwFrame) {
             }
             {
                 m_performanceMonitor->startTimer("Rectification of positions of map points");
-                m_mapProjector.deleteFaildedMapPoints();
-                m_locationOptimizer.deleteFaildedMapPoints(&m_map);
+                m_mapProjector.deleteFailedMapPoints();
+                m_locationOptimizer.deleteFailedMapPoints(&m_map);
                 m_map.deleteNullMapPoints(&m_mapResourceManager);
                 _optimizeMapPoints(newFrame);
                 m_mapProjector.createNewMapPointsFromCandidates(newFrame);
@@ -565,8 +571,8 @@ void ARSystem::_process(const ImageRef<uchar> &bwFrame) {
                 }
             }
             {
-                m_mapProjector.deleteFaildedMapPoints();
-                m_locationOptimizer.deleteFaildedMapPoints(&m_map);
+                m_mapProjector.deleteFailedMapPoints();
+                m_locationOptimizer.deleteFailedMapPoints(&m_map);
                 m_map.deleteNullMapPoints(&m_mapResourceManager);
                 m_mapProjector.createNewMapPointsFromCandidates(newFrame);
             }
@@ -726,5 +732,35 @@ void ARSystem::_incSuccessScore(PreviewFrame &frame) {
         if (m_builderTypeMapPoint.getType(it->mapPoint->statistic()) != TypeMapPoint::Good)
             it->mapPoint->statistic().incSuccess();
     }
+}
+
+const char* stateToString(const TrackingState state) {
+    static const char* names[] = {
+            "Undefining",
+            "CaptureFirstFrame",
+            "CaptureSecondFrame",
+            "Tracking",
+            "LostTracking"
+    };
+    return names[static_cast<int>(state)];
+}
+
+std::ostream& operator<<(std::ostream& os, const TrackingState state) {
+    os << stateToString(state);
+    return os;
+}
+
+const char* qualityToString(const TrackingQuality quality) {
+    static const char* names[] = {
+            "Good",
+            "Bad",
+            "Ugly"
+    };
+    return names[static_cast<int>(quality)];
+}
+
+std::ostream& operator<<(std::ostream& os, const TrackingQuality state) {
+    os << qualityToString(state);
+    return os;
 }
 }

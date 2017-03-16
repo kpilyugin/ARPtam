@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <ostream>
 
 #include <cmath>
 #ifdef QT_CORE_LIB
@@ -459,6 +460,15 @@ TVector<Type> cross3(const TVector<Type>& a, const TVector<Type>& b)
     return TVector<Type>::create(a(1) * b(2) - a(2) * b(1),
                                  a(2) * b(0) - a(0) * b(2),
                                  a(0) * b(1) - a(1) * b(0));
+}
+
+template<typename Type>
+std::ostream& operator<<(std::ostream& os, const TVector<Type>& vec) {
+    os << "[";
+    for (int i = 0; i < vec.size(); ++i) {
+        os << vec(i) << (i < vec.size() - 1 ? ", " : " ]");
+    }
+    return os;
 }
 
 } //namespace TMath

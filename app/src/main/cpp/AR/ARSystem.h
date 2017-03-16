@@ -59,8 +59,8 @@ public:
     double toleranceOfCreatingFrames() const;
     void setToleranceOfCreatingFrames(double toleranceOfCreatingFrames);
 
-    int numberPointsForSructureOptimization() const;
-    void setNumberPointsForSructureOptimization(int numberPointsForSructureOptimization);
+    int numberPointsForStructureOptimization() const;
+    void setNumberPointsForStructureOptimization(int numberPointsForSructureOptimization);
 
     int numberIterationsForStructureOptimization() const;
     void setNumberIterationsForStructureOptimization(int numberIterationsForStructureOptimization);
@@ -142,6 +142,9 @@ private:
 
     void _reset();
 };
+
+std::ostream& operator<<(std::ostream& os, const TrackingState state);
+std::ostream& operator<<(std::ostream& os, const TrackingQuality state);
 
 }
 

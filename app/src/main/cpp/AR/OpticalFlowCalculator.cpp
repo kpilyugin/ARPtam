@@ -502,7 +502,6 @@ TrackingResult OpticalFlowCalculator::_tracking2dOnSecondImageLK(Point2f& positi
     return TrackingResult::Uncompleted;
 }
 
-
 TrackingResult OpticalFlowCalculator::_tracking2dOnSecondImage_line(Point2f& position,
                                                                     const Point2f& line_n,
                                                                     const uchar* imageRef,

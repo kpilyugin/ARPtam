@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <iostream>
+#include <sstream>
 
 #include "AR/ARSystem.h"
 #include "Logger.h"
@@ -8,7 +9,7 @@ using namespace AR;
 
 extern "C" {
 
-ARSystem* arSystem(long handle) {
+ARSystem* arSystem(jlong handle) {
     return reinterpret_cast<ARSystem*>(handle);
 }
 
@@ -18,6 +19,7 @@ Java_mit_spbau_arptam_ARSystem_nCreate(JNIEnv* env, jclass type) {
     arSystem->setInitConfiguration(arSystem->initConfiguration());
     arSystem->setTrackingConfiguration(arSystem->trackingConfiguration());
     arSystem->setCameraParameters(arSystem->cameraParameters());
+    arSystem->setMapPointsDetectorConfiguration(MapPointsDetectorConfiguration());
     start_logger("ARSystem");
     return reinterpret_cast<jlong>(arSystem);
 }
@@ -55,6 +57,22 @@ Java_mit_spbau_arptam_ARSystem_nNextTrackingState(JNIEnv* env, jclass type, jlon
 JNIEXPORT void JNICALL
 Java_mit_spbau_arptam_ARSystem_nRenderTrackingInfo(JNIEnv* env, jclass type, jlong handle) {
     arSystem(handle)->renderTrackingInfo();
+}
+
+JNIEXPORT jstring JNICALL
+Java_mit_spbau_arptam_ARSystem_nGetTrackingInfo(JNIEnv* env, jclass type, jlong handle) {
+    std::stringstream ss;
+    ARSystem* arSystem = reinterpret_cast<ARSystem*>(handle);
+    TrackingState state = arSystem->trackingState();
+    ss << "Tracking state: " << state << std::endl;
+    if (state == TrackingState::Tracking) {
+        ss << "Tracking quality: " << arSystem->trackingQuality() << std::endl;
+        ss << "Current translation: " << arSystem->currentTranslation() << std::endl;
+        ss << "Current rotation: " << arSystem->currentRotation() << std::endl;
+        ss << "Number of map points: " << arSystem->map()->countMapPoints() << std::endl;
+        ss << "Number of keyframes: " << arSystem->map()->countKeyFrames() << std::endl;
+    }
+    return env->NewStringUTF(ss.str().c_str());
 }
 
 }

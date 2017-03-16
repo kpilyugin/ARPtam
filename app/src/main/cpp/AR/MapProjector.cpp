@@ -239,6 +239,7 @@ void MapProjector::projectMapPoints(PreviewFrame & previewFrame,
 void MapProjector::createNewMapPointsFromCandidates(PreviewFrame & previewFrame)
 {
     TMath_assert(m_map != nullptr);
+    std::cout << "MapProjector:createNewMapPointsFromCandidates size = " << m_successCurrentCandidatePoints.size() << std::endl;
     for (auto it = m_successCurrentCandidatePoints.begin(); it != m_successCurrentCandidatePoints.end(); ++it) {
         CandidateMapPoint * candidateMapPoint = it->candidateMapPoint;
         std::shared_ptr<KeyFrame> keyFrame = candidateMapPoint->keyFrame;
@@ -287,7 +288,7 @@ std::shared_ptr<KeyFrame> MapProjector::lastVisibleKeyFrame(std::size_t index)
     return m_visibleKeyFrames[index].keyFrame;
 }
 
-void MapProjector::deleteFaildedMapPoints()
+void MapProjector::deleteFailedMapPoints()
 {
     for (auto it = m_failedMapPoints.begin(); it != m_failedMapPoints.end(); ++it) {
         std::shared_ptr<MapPoint> mapPoint = *it;

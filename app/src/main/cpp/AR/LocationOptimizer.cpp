@@ -170,7 +170,7 @@ void LocationOptimizer::optimize(PreviewFrame & previewFrame)
     }
 }
 
-void LocationOptimizer::deleteFaildedMapPoints(Map * map)
+void LocationOptimizer::deleteFailedMapPoints(Map* map)
 {
     for (auto it = m_failedMapPoints.begin(); it != m_failedMapPoints.end(); ++it) {
         std::shared_ptr<MapPoint> mapPoint = *it;

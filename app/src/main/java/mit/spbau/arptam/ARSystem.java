@@ -28,6 +28,10 @@ public class ARSystem {
     nRenderTrackingInfo(mHandle);
   }
 
+  public String getTrackingInfo() {
+    return nGetTrackingInfo(mHandle);
+  }
+
   private static native long nCreate();
 
   private static native void nProcessFrame(long handle, int width, int height, byte[] data);
@@ -37,4 +41,6 @@ public class ARSystem {
   private static native void nNextTrackingState(long handle);
 
   private static native void nRenderTrackingInfo(long handle);
+
+  private static native String nGetTrackingInfo(long handle);
 }

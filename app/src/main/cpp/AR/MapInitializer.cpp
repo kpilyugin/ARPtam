@@ -217,6 +217,7 @@ void MapInitializer::setSecondFrame(const std::shared_ptr<const Camera> & camera
 
 MapInitializer::InitializationResult MapInitializer::compute(Map * map, MapResourcesManager * manager, bool force)
 {
+    std::cout << "MapInitializer::compute" << std::endl;
     if ((m_featureDetector.firstImage().data() != nullptr) &&
             (m_featureDetector.secondImage().data() != nullptr)) {
         if (m_secondFeatures.size() != m_firstFeatures.size()) {
@@ -342,6 +343,7 @@ void MapInitializer::_initializeMap(Map * map, MapResourcesManager * manager)
                      vectorDepths.begin() + medianOffset,
                      vectorDepths.end());
     double scale = m_mapScale / vectorDepths[medianOffset];
+    std::cout << "MapInitializer: map size = " << map->countMapPoints() << std::endl;
 
     if (_findPlane()) {
         TMatrixd planeMatrix = _computePlaneMatrix();

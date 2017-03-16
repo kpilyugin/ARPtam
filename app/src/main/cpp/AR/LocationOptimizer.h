@@ -35,7 +35,7 @@ public:
     MapResourcesManager * mapResourceManager();
     void setMapResourceManager(MapResourcesManager * mapResourceManager);
 
-    void deleteFaildedMapPoints(Map * map);
+    void deleteFailedMapPoints(Map* map);
 
     inline static Point2d project2d(const TMath::TVectord & v)
     {
