@@ -1,5 +1,5 @@
 #include <jni.h>
-#include <PTAM/Tracker.h>
+#include "PTAM/Tracker.h"
 #include "PTAM/PtamSystem.h"
 #include "Logger.h"
 

@@ -6,7 +6,7 @@
 #include "SmallBlurryImage.h"
 #include <cvd/vision.h>
 #include <cvd/fast_corner.h>
-#include <agast/agast_corner_detect.h>
+#include <agast_corner_detect.h>
 
 #include <pthread.h>
 //#define ENABLE_TIMING

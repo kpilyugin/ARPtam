@@ -9,9 +9,14 @@ cmake_minimum_required(VERSION 3.4.1)
 # You can define multiple libraries, and CMake builds it for you.
 # Gradle automatically packages shared libraries with your APK.
 
+add_subdirectory(ndk-modules/agast)
+add_subdirectory(ndk-modules/cvd)
+
 include_directories(src/main/cpp)
-include_directories(3rdparty)
-include_directories(3rdparty/agast/include)
+include_directories(ndk-modules)
+include_directories(ndk-modules/agast/include/agast)
+include_directories(ndk-modules/TooN/include)
+include_directories(ndk-modules/cvd/installfiles)
 
 add_library( # Sets the name of the library.
             native-lib
@@ -69,6 +74,7 @@ add_library( # Sets the name of the library.
 
             src/main/jni/ARSystemJni.cpp
             src/main/jni/PtamSystemJni.cpp
+            src/main/jni/Logger.cpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -77,12 +83,7 @@ add_library( # Sets the name of the library.
 # you want to add. CMake verifies that the library exists before
 # completing its build.
 
-find_library( # Sets the name of the path variable.
-              log-lib
-
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
+find_library(log-lib log)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in the
@@ -91,6 +92,7 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
                        native-lib
                        agast
+                       cvd
 
                        # Links the target library to the log library
                        # included in the NDK.

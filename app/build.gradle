@@ -21,6 +21,9 @@ android {
         cppFlags.add("-Wno-deprecated")
       }
     }
+    ndk {
+      abiFilters /*'armeabi-v7a', */'x86'
+    }
   }
   buildTypes {
     release {
@@ -33,8 +36,11 @@ android {
     }
   }
   externalNativeBuild {
-    cmake {
-      path "CMakeLists.txt"
+//    cmake {
+//      path "CMakeLists.txt"
+//    }
+    ndkBuild {
+      path "Android.mk"
     }
   }
 }
