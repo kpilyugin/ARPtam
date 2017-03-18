@@ -37,6 +37,7 @@ std::vector<PreviewFrame::PreviewFeature> & PreviewFrame::previewFeatures()
 {
     return m_previewFeatures;
 }
+
 const std::vector<PreviewFrame::PreviewFeature> & PreviewFrame::previewFeatures() const
 {
     return m_previewFeatures;

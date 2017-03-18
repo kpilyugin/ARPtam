@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <cstddef>
 #include "TMath/TVector.h"
 #include "TMath/TMatrix.h"
 #include "Image.h"

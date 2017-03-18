@@ -4,7 +4,7 @@
 
 namespace AR {
 
-const TMath::TVectord Camera::defaultCameraParameters = TMath::TVectord::create(1.06, 1.59, 0.5, 0.5, 0.0);
+const TMath::TVectord Camera::defaultCameraParameters = TMath::TVectord::create(0.84, 1.12, 0.5, 0.5, 0.0);
 
 Camera::Camera()
 {

@@ -9,7 +9,6 @@
 #include <iostream>
 #include "TMath/TMath.h"
 #include "TukeyRobustCost.h"
-#include "MapWriter.h"
 #include "KeyFrame.h"
 #include "MapPoint.h"
 #include "ImageProcessing.h"
@@ -25,7 +24,7 @@ MapInitializer::MapInitializer():
     m_mapScale = 10.0;
     m_minCountFeatures = 40;
     m_minCountMapPoints = 30;
-    setMinDisparity(10.0f);
+    setMinDisparity(20.0f);
     m_featureDetector.setGridSize(Point2i(20, 20));
     m_epsDistanceForPlane = 0.1;
 }
@@ -194,9 +193,9 @@ void MapInitializer::setFirstFrame(const std::shared_ptr<const Camera> & camera,
     if (m_featureDetector.firstImage().data() != nullptr) {
         std::vector<FeatureDetector::FeatureCorner> features;
         m_featureDetector.detectFeaturesOnFirstImage(features);
-        for (std::vector<FeatureDetector::FeatureCorner>::iterator it = features.begin(); it != features.end(); ++it) {
-            m_firstFeatures.push_back(Point2f((float)it->pos.x, (float)it->pos.y));
-            m_featureImageLevel.push_back(it->level);
+        for (const FeatureDetector::FeatureCorner& feature: features) {
+            m_firstFeatures.push_back(Point2f((float)feature.pos.x, (float)feature.pos.y));
+            m_featureImageLevel.push_back(feature.level);
         }
     }
 }
@@ -217,7 +216,6 @@ void MapInitializer::setSecondFrame(const std::shared_ptr<const Camera> & camera
 
 MapInitializer::InitializationResult MapInitializer::compute(Map * map, MapResourcesManager * manager, bool force)
 {
-    std::cout << "MapInitializer::compute" << std::endl;
     if ((m_featureDetector.firstImage().data() != nullptr) &&
             (m_featureDetector.secondImage().data() != nullptr)) {
         if (m_secondFeatures.size() != m_firstFeatures.size()) {
@@ -1182,128 +1180,14 @@ void MapInitializer::_chooseBestDecomposition()
 
 bool MapInitializer::_computeTransformation()
 {
-    /*using namespace TMath;
-    static const double eps = 1e-2;
-    static const double sqrt_2 = std::sqrt(2.0);
-
-    int countNulls = 0;
-    _findBestEssential();
-    Point2d T_firstCenter(0.0, 0.0), T_secondCenter(0.0, 0.0);
-    double T_firstScale = 0.0, T_secondScale = 0.0;
-    if ((int)m_inlinerIndices.size() >= m_minCountMapPoints) {
-
-        std::size_t k;
-        for (k = 0; k < m_inlinerIndices.size(); ++k) {
-            const Match& match = m_matches[m_inlinerIndices[k]];
-
-            T_firstCenter.x += match.camFirst(0);
-            T_firstCenter.y += match.camFirst(1);
-            T_secondCenter.x += match.camSecond(0);
-            T_secondCenter.y += match.camSecond(1);
-        }
-        T_firstCenter /= (double)(m_inlinerIndices.size());
-        T_secondCenter /= (double)(m_inlinerIndices.size());
-
-        for (k = 0; k < m_inlinerIndices.size(); ++k) {
-            const Match& match = m_matches[m_inlinerIndices[k]];
-
-            T_firstScale += Point2d(match.camFirst(0) - T_firstCenter.x,
-                                    match.camFirst(1) - T_firstCenter.y).length();
-            T_secondScale += Point2d(match.camSecond(0) - T_secondCenter.x,
-                                     match.camSecond(1) - T_secondCenter.y).length();
-        }
-        T_firstScale /= (double)(m_inlinerIndices.size());
-        T_secondScale /= (double)(m_inlinerIndices.size());
-
-        T_firstScale = sqrt_2 / T_firstScale;
-        T_secondScale = sqrt_2 / T_secondScale;
-
-        TMatrixd A((int)m_inlinerIndices.size(), 9);
-        double* A_dataRow = A.firstDataRow();
-        for (k = 0; k < m_inlinerIndices.size(); ++k) {
-            const Match& match = m_matches[m_inlinerIndices[k]];
-
-            const Point2d uv_first((match.camFirst(0) - T_firstCenter.x) * T_firstScale,
-                                   (match.camFirst(1) - T_firstCenter.y) * T_firstScale);
-            const Point2d uv_second((match.camSecond(0) - T_secondCenter.x) * T_secondScale,
-                                    (match.camSecond(1) - T_secondCenter.y) * T_secondScale);
-
-            A_dataRow[0] = uv_first.x * uv_second.x;
-            A_dataRow[1] = uv_first.y * uv_second.x;
-            A_dataRow[2] = uv_second.x;
-            A_dataRow[3] = uv_first.x * uv_second.y;
-            A_dataRow[4] = uv_first.y * uv_second.y;
-            A_dataRow[5] = uv_second.y;
-            A_dataRow[6] = uv_first.x;
-            A_dataRow[7] = uv_first.y;
-            A_dataRow[8] = 1.0;
-
-            A_dataRow = &A_dataRow[9];
-        }
-
-        m_svd.compute(A, (A.rows() < 9));
-
-        TVectord W = m_svd.diagonalW();
-        double eps2 = std::fabs(W(8)) + eps;
-        for (int i = 8; i >= 0; --i) {
-            if (std::fabs(W(i)) < eps2)
-                ++countNulls;
-        }
-    } else {
-        countNulls = 3;
-    }
-    if ((countNulls == 0) || (countNulls > 3))
+    _findBestHomography();
+    if ((int)m_inlinerIndices.size() < m_minCountMapPoints)
         return false;
-    if (countNulls == 3) {*/
-        _findBestHomography();
-        if ((int)m_inlinerIndices.size() < m_minCountMapPoints)
-            return false;
-        m_bestHomography = _findHomography();
-        if (!_computeDecompositionsOfHomography())
-            return false;
-        _chooseBestDecomposition();
-        return true;/*
-    }
-    TMatrixd T_first(3, 3);
-    T_first(0, 0) = T_firstScale;
-    T_first(0, 1) = 0.0;
-    T_first(0, 2) = - T_firstCenter.x * T_firstScale;
-    T_first(1, 0) = 0.0;
-    T_first(1, 1) = T_firstScale;
-    T_first(1, 2) = - T_firstCenter.y * T_firstScale;
-    T_first(2, 0) = 0.0;
-    T_first(2, 1) = 0.0;
-    T_first(2, 2) = 1.0;
-    TMatrixd T_second(3, 3);
-    T_second(0, 0) = T_secondScale;
-    T_second(0, 1) = 0.0;
-    T_second(0, 2) = - T_secondCenter.x * T_secondScale;
-    T_second(1, 0) = 0.0;
-    T_second(1, 1) = T_secondScale;
-    T_second(1, 2) = - T_secondCenter.y * T_secondScale;
-    T_second(2, 0) = 0.0;
-    T_second(2, 1) = 0.0;
-    T_second(2, 2) = 1.0;
-    if (countNulls == 2) {
-        TMatrixd F1(3, 3, m_svd.V_transposed().getDataRow(7));
-        TMatrixd F2(3, 3, m_svd.V_transposed().getDataRow(8));
-        TMatrixd essentials[3];
-        int count = _computeEssentials(essentials, F1, F2);
-        if (count <= 0)
-            return false;
-        for (int i = 0; i < count; ++i) {
-            essentials[i] = T_second.refTransposed() * essentials[i] * T_first;
-            essentials[i] = _fixEssentialMatrix(essentials[i]);
-            _essentialToDecompositions(essentials[i]);
-        }
-    } else {
-        m_bestEssential = TMatrixd(3, 3, m_svd.V_transposed().getDataRow(8));
-        m_bestEssential = _fixEssentialMatrix(m_bestEssential);
-        m_bestEssential = T_second.refTransposed() * m_bestEssential * T_first;
-        _essentialToDecompositions(m_bestEssential);
-    }
+    m_bestHomography = _findHomography();
+    if (!_computeDecompositionsOfHomography())
+        return false;
     _chooseBestDecomposition();
-    return true;*/
+    return true;
 }
 
 }

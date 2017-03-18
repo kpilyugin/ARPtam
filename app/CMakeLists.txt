@@ -10,48 +10,66 @@ cmake_minimum_required(VERSION 3.4.1)
 # Gradle automatically packages shared libraries with your APK.
 
 include_directories(src/main/cpp)
+include_directories(3rdparty)
+include_directories(3rdparty/agast/include)
 
 add_library( # Sets the name of the library.
-             native-lib
+            native-lib
 
-             # Sets the library as a shared library.
-             SHARED
+            # Sets the library as a shared library.
+            SHARED
 
-             # Provides a relative path to your source file(s).
-             # Associated headers in the same location as their source
-             # file are automatically included.
+            # Provides a relative path to your source file(s).
+            # Associated headers in the same location as their source
+            # file are automatically included.
 
-             src/main/cpp/AR/Camera.cpp
-                 src/main/cpp/AR/ImageProcessing.cpp 
-                 src/main/cpp/AR/CalibrationFrame.cpp 
-                 src/main/cpp/AR/CameraCalibrator.cpp 
-                 src/main/cpp/AR/CalibrationCorner.cpp 
-                 src/main/cpp/AR/faster_corner_10.cxx 
-                 src/main/cpp/AR/OpticalFlow.cpp 
-                 src/main/cpp/AR/OpticalFlowCalculator.cpp 
-                 src/main/cpp/AR/FeatureDetector.cpp 
-                 src/main/cpp/AR/KeyFrame.cpp 
-                 src/main/cpp/AR/MapPoint.cpp 
-                 src/main/cpp/AR/Map.cpp 
-                 src/main/cpp/AR/Feature.cpp 
-                 src/main/cpp/AR/FastCorner.cpp 
-                 src/main/cpp/AR/MapProjector.cpp 
-                 src/main/cpp/AR/ARSystem.cpp 
-                 src/main/cpp/AR/Frame.cpp 
-                 src/main/cpp/AR/PreviewFrame.cpp 
-                 src/main/cpp/AR/MapInitializer.cpp 
-                 src/main/cpp/AR/PerformanceMonitor.cpp 
-                 src/main/cpp/AR/LocationOptimizer.cpp 
-                 src/main/cpp/AR/Tracker.cpp 
-                 src/main/cpp/AR/MapPointsDetector.cpp 
-                 src/main/cpp/AR/MapResourceObject.cpp 
-                 src/main/cpp/AR/MapResourcesManager.cpp 
-                src/main/cpp/AR/MapResourceLocker.cpp
-                src/main/cpp/AR/TrackerRenderer.cpp
+            src/main/cpp/AR/Camera.cpp
+            src/main/cpp/AR/ImageProcessing.cpp
+            src/main/cpp/AR/CalibrationFrame.cpp
+            src/main/cpp/AR/CameraCalibrator.cpp
+            src/main/cpp/AR/CalibrationCorner.cpp
+            src/main/cpp/AR/faster_corner_10.cxx
+            src/main/cpp/AR/OpticalFlow.cpp
+            src/main/cpp/AR/OpticalFlowCalculator.cpp
+            src/main/cpp/AR/FeatureDetector.cpp
+            src/main/cpp/AR/KeyFrame.cpp
+            src/main/cpp/AR/MapPoint.cpp
+            src/main/cpp/AR/Map.cpp
+            src/main/cpp/AR/Feature.cpp
+            src/main/cpp/AR/FastCorner.cpp
+            src/main/cpp/AR/MapProjector.cpp
+            src/main/cpp/AR/ARSystem.cpp
+            src/main/cpp/AR/Frame.cpp
+            src/main/cpp/AR/PreviewFrame.cpp
+            src/main/cpp/AR/MapInitializer.cpp
+            src/main/cpp/AR/PerformanceMonitor.cpp
+            src/main/cpp/AR/LocationOptimizer.cpp
+            src/main/cpp/AR/Tracker.cpp
+            src/main/cpp/AR/MapPointsDetector.cpp
+            src/main/cpp/AR/MapResourceObject.cpp
+            src/main/cpp/AR/MapResourcesManager.cpp
+            src/main/cpp/AR/MapResourceLocker.cpp
+            src/main/cpp/AR/TrackerRenderer.cpp
 
+            src/main/cpp/PTAM/ATANCamera.cc
+            src/main/cpp/PTAM/Bundle.cc
+            src/main/cpp/PTAM/HomographyInit.cc
+            src/main/cpp/PTAM/KeyFrame.cc
+            src/main/cpp/PTAM/Map.cc
+            src/main/cpp/PTAM/MapMaker.cc
+            src/main/cpp/PTAM/MapPoint.cc
+            src/main/cpp/PTAM/MiniPatch.cc
+            src/main/cpp/PTAM/PatchFinder.cc
+            src/main/cpp/PTAM/PtamSystem.cc
+            src/main/cpp/PTAM/Relocaliser.cc
+            src/main/cpp/PTAM/ShiTomasi.cc
+            src/main/cpp/PTAM/SmallBlurryImage.cc
+            src/main/cpp/PTAM/Tracker.cc
+            src/main/cpp/PTAM/ThreadPool.cc
 
-             src/main/jni/ARSystemJni.cpp
-    )
+            src/main/jni/ARSystemJni.cpp
+            src/main/jni/PtamSystemJni.cpp
+)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by
@@ -72,6 +90,7 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
                        native-lib
+                       agast
 
                        # Links the target library to the log library
                        # included in the NDK.

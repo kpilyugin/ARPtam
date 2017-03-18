@@ -236,11 +236,9 @@ void Tracker::tracking()
     m_jacobian_cashe = Image<double>(Point2i(patchSize.y * patchSize.x * 6, (int)m_featuresInfo.size()));
     m_pixels_cashe = Image<float>(Point2i(patchSize.y * patchSize.x, (int)m_featuresInfo.size()));
     int i = 0;
-    for (std::vector<FeatureInfo>::iterator it = m_featuresInfo.begin();
-            it != m_featuresInfo.end();
-            ++it) {
-        it->jacobian_cache = m_jacobian_cashe.pointer(0, i);
-        it->pixels_cache = m_pixels_cashe.pointer(0, i);
+    for (FeatureInfo& info: m_featuresInfo) {
+        info.jacobian_cache = m_jacobian_cashe.pointer(0, i);
+        info.pixels_cache = m_pixels_cashe.pointer(0, i);
         ++i;
     }
 

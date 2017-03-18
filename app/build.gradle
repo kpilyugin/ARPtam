@@ -11,7 +11,14 @@ android {
     versionName "1.0"
     externalNativeBuild {
       cmake {
-        cppFlags "-std=c++11"
+        cppFlags.add("-std=c++11")
+        cppFlags.add("-fexceptions")
+        cppFlags.add("-frtti")
+        cppFlags.add("-O3")
+        cppFlags.add("-ffast-math")
+        cppFlags.add("-ftree-vectorize")
+        cppFlags.add("-pthread")
+        cppFlags.add("-Wno-deprecated")
       }
     }
   }

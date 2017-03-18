@@ -28,6 +28,10 @@ public class ARSystem {
     nRenderTrackingInfo(mHandle);
   }
 
+  public void setCameraParameters(float focalLengthX, float focalLengthY) {
+    nSetCameraParameters(mHandle, focalLengthX, focalLengthY);
+  }
+
   public String getTrackingInfo() {
     return nGetTrackingInfo(mHandle);
   }
@@ -43,4 +47,6 @@ public class ARSystem {
   private static native void nRenderTrackingInfo(long handle);
 
   private static native String nGetTrackingInfo(long handle);
+
+  private static native void nSetCameraParameters(long mHandle, float focalLengthX, float focalLengthY);
 }

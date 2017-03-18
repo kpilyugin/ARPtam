@@ -2,6 +2,7 @@
 #include "MapPoint.h"
 #include "MapResourceLocker.h"
 #include "ImageProcessing.h"
+#include "LocationOptimizer.h"
 #include "TMath/TTools.h"
 #include "TMath/TVector.h"
 #include "ZMSSD.h"
@@ -29,8 +30,8 @@ ARSystem::ARSystem() :
     m_trackerTransform.setMapResourceManager(&m_mapResourceManager);
     m_numberPointsForStructureOptimization = 30;
     m_numberIterationsForStructureOptimization = 10;
-    m_toleranceOfCreatingFrames = 0.15;
-    m_minNumberTrackingPoints = 5;
+    m_toleranceOfCreatingFrames = 0.1;
+    m_minNumberTrackingPoints = 15;
     m_preferredNumberTrackingPoints = 25;
     m_maxCountKeyFrames = 10;
     m_trackingState = TrackingState::Undefining;
@@ -349,12 +350,6 @@ void ARSystem::renderTrackingInfo() {
             m_trackerRenderer.renderLine(a, b, blue);
         }
     } else if (m_trackingState == TrackingState::Tracking) {
-        size_t mapPoints = m_map.countMapPoints();
-//        std::cout << "tracking: num map points = " << mapPoints << std::endl;
-        for (size_t i = 0; i < mapPoints; ++i) {
-            const std::shared_ptr<MapPoint>& point = m_map.mapPoint(i);
-        }
-        
         auto currentFeatures =  m_lastFrame->previewFeatures();
         Point2f delta0(5.0f, 5.0f), delta1(-5.0f, -5.0f);
         Point2f delta2(5.0f, -5.0f), delta3(-5.0f, 5.0f);
@@ -366,12 +361,12 @@ void ARSystem::renderTrackingInfo() {
             c1 = currentF + delta1;
             c2 = currentF + delta2;
             c3 = currentF + delta3;
-            Point2f a(c0.x * scale.x - 1.0f, c0.y * scale.y - 1.0f);
-            Point2f b(c1.x * scale.x - 1.0f, c1.y * scale.y - 1.0f);
-            Point2f c(c2.x * scale.x - 1.0f, c2.y * scale.y - 1.0f);
-            Point2f d(c3.x * scale.x - 1.0f, c3.y * scale.y - 1.0f);
-            m_trackerRenderer.renderLine(a, b, green);
-            m_trackerRenderer.renderLine(c, d, red);
+            Point2f a(c0.x * scale.x - 1.0f, 1.0f - c0.y * scale.y);
+            Point2f b(c1.x * scale.x - 1.0f, 1.0f - c1.y * scale.y);
+            Point2f c(c2.x * scale.x - 1.0f, 1.0f - c2.y * scale.y);
+            Point2f d(c3.x * scale.x - 1.0f, 1.0f - c3.y * scale.y);
+            m_trackerRenderer.renderLine(a, b, blue);
+            m_trackerRenderer.renderLine(c, d, blue);
         }
     } else if (m_trackingState == TrackingState::LostTracking) {
         std::cout << "Lost tracking!" << std::endl;
@@ -436,6 +431,8 @@ void ARSystem::_process(const ImageRef<uchar> &bwFrame) {
 
             if (m_mapProjector.existCloseKeyFrame(newFrame, m_toleranceOfCreatingFrames)) {
                 needNewFrame = false;
+            } else {
+                std::cout << "ARSystem: needNewFrame" << std::endl;
             }
             _incSuccessScore(newFrame);
             if ((int) newFrame.countPreviewFeatures() < m_minNumberTrackingPoints) {

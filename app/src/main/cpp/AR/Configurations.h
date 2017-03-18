@@ -34,7 +34,7 @@ struct InitConfiguration
         minCountFeatures = 40;
         maxCountFeatures = 100;
         minCountMapPoints = 30;
-        minDisparity = 7.0f;
+        minDisparity = 15.0f;
         frameGridSize = Point2i(20, 20);
         featureCornerBarier = 3;
         featureDetectionThreshold = 5.0f;

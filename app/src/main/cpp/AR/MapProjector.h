@@ -138,6 +138,8 @@ private:
     std::vector<int> m_cellOrders;
     std::vector<VisibleKeyFrame> m_visibleKeyFrames;
     std::set<std::shared_ptr<MapPoint>> m_projectedMapPoints;
+    int m_processedPoints;
+    int m_addedCandidatePoints;
     Point2f m_targetFrameBegin, m_targetFrameEnd;
     TMath::TMatrixd m_targetFrame_invRotation;
     TMath::TVectord m_targetFrame_invTranslation;

@@ -23,7 +23,7 @@ MapProjector::MapProjector()
     m_mapPointsDetector = nullptr;
     m_maxNumberOfUsedKeyFrames = 10;
     m_frameBorder = 5;
-    m_maxNumberOfFeaturesOnFrame = 60;
+    m_maxNumberOfFeaturesOnFrame = 150;
     setGridSize(Point2i(20, 20));
     setCursorSize(Point2i(4, 4));
     setPixelEps(1e-3f);
@@ -187,28 +187,6 @@ void MapProjector::projectMapPoints(PreviewFrame & previewFrame,
 
     m_projectedMapPoints.clear();
     (void)prevPreviewFrame;
-    /*std::shared_ptr<const Camera> prevCamera = prevPreviewFrame.camera();
-    const std::vector<PreviewFrame::PreviewFeature>& oldFeatures = prevPreviewFrame.previewFeatures();
-    for (auto it = oldFeatures.cbegin(); it != oldFeatures.cend(); ++it) {
-        std::shared_ptr<const MapPoint> mapPoint = it->mapPoint;
-        m_indiciesOfProjectedMapPoints.insert(mapPoint->index());
-        TMath::TVectord position = previewFrame.rotation() * mapPoint->position() + previewFrame.translation();
-        m_lastProjection = prevCamera->project(Point2d(position(0) / position(2),
-                                                       position(1) / position(2))).cast<float>();
-        if ((m_lastProjection.x > m_targetFrameBegin.x) && (m_lastProjection.y > m_targetFrameBegin.y) &&
-                (m_lastProjection.x < m_targetFrameEnd.x) && (m_lastProjection.y < m_targetFrameEnd.y)) {
-            int k = ((int)(m_lastProjection.y / m_cellSize.y)) * m_gridSize.x +
-                     (int)(m_lastProjection.x / m_cellSize.x);
-            if (m_cells_lock[k]) {
-                continue;
-            }
-            if (_projectMapPoint(previewFrame, mapPoint, m_lastProjection)) {
-                previewFrame.addPreviewFeature({ it->mapPoint, m_lastProjection, m_lastSearchImageLevel });
-                m_cells_lock[k] = true;
-                ++currentCountTrackingPoints;
-            }
-        }
-    }*/
 
     _findVisibleKeyFrames(previewFrame);
     _projectMapPointsOnGrid(previewFrame);
@@ -227,19 +205,29 @@ void MapProjector::projectMapPoints(PreviewFrame & previewFrame,
         CandidatesReader candidatesReader(m_mapPointsDetector);
         _projectCandidatesPointsOnGrid(previewFrame, candidatesReader.candidateMapPointsList());
         for (i = 0;
-             (i < m_cellOrders.size()) && (currentCountTrackingPoints < m_maxNumberOfFeaturesOnFrame);
+             (i < m_cellOrders.size()) &&
+             (currentCountTrackingPoints < m_maxNumberOfFeaturesOnFrame);
              ++i) {
             if (_processCandidatePointOnCell(previewFrame, m_cellOrders[i])) {
                 ++currentCountTrackingPoints;
             }
         }
     }
+    if (m_processedPoints > 0) {
+        std::cout << "projectMapPoints: total = " << m_processedPoints << ", added = " <<
+        m_addedCandidatePoints << std::endl;
+        m_processedPoints = 0;
+        m_addedCandidatePoints = 0;
+    }
 }
 
 void MapProjector::createNewMapPointsFromCandidates(PreviewFrame & previewFrame)
 {
     TMath_assert(m_map != nullptr);
-    std::cout << "MapProjector:createNewMapPointsFromCandidates size = " << m_successCurrentCandidatePoints.size() << std::endl;
+    if (!m_successCurrentCandidatePoints.empty()) {
+        std::cout << "MapProjector:createNewMapPointsFromCandidates size = " <<
+        m_successCurrentCandidatePoints.size() << std::endl;
+    }
     for (auto it = m_successCurrentCandidatePoints.begin(); it != m_successCurrentCandidatePoints.end(); ++it) {
         CandidateMapPoint * candidateMapPoint = it->candidateMapPoint;
         std::shared_ptr<KeyFrame> keyFrame = candidateMapPoint->keyFrame;
@@ -522,7 +510,9 @@ bool MapProjector::_processCandidatePointOnCell(PreviewFrame & targetFrame, int 
                             });
     auto it = cell_candidates.begin();
     while (it != cell_candidates.end()) {
+        m_processedPoints++;
         if (_projectCandidatePoint(targetFrame, it->candidateMapPoint, it->projection)) {
+            m_addedCandidatePoints++;
             m_successCurrentCandidatePoints.push_back({ it->candidateMapPoint, m_lastProjection, m_lastSearchImageLevel });
             //m_cells_lock[k] = true;
             return true;

@@ -66,13 +66,20 @@ Java_mit_spbau_arptam_ARSystem_nGetTrackingInfo(JNIEnv* env, jclass type, jlong 
     TrackingState state = arSystem->trackingState();
     ss << "Tracking state: " << state << std::endl;
     if (state == TrackingState::Tracking) {
-        ss << "Tracking quality: " << arSystem->trackingQuality() << std::endl;
-        ss << "Current translation: " << arSystem->currentTranslation() << std::endl;
-        ss << "Current rotation: " << arSystem->currentRotation() << std::endl;
-        ss << "Number of map points: " << arSystem->map()->countMapPoints() << std::endl;
-        ss << "Number of keyframes: " << arSystem->map()->countKeyFrames() << std::endl;
+        ss << "Tracking quality: " << arSystem->trackingQuality()
+        << "\nCurrent translation: " << arSystem->currentTranslation()
+        << "\nCurrent rotation: " << arSystem->currentRotation()
+        << "\nNumber of map points: " << arSystem->map()->countMapPoints()
+        << "\nNumber of keyframes: " << arSystem->map()->countKeyFrames()
+        << "\nCurrent features size: " << arSystem->currentFeatures().size() << "\n";
     }
     return env->NewStringUTF(ss.str().c_str());
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_ARSystem_nSetCameraParameters(JNIEnv* env, jclass type, jlong handle,
+                                                    jfloat focalLengthX, jfloat focalLengthY) {
+    arSystem(handle)->setCameraParameters(TMath::TVectord::create(focalLengthX, focalLengthY, 0.5, 0.5, 0.0));
 }
 
 }

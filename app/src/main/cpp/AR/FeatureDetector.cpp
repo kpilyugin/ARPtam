@@ -9,8 +9,8 @@ FeatureDetector::FeatureDetector():
     m_barrier = 3;
     m_detectionThreshold = 5.0f;
     m_minLevelForFeature = m_maxLevelForFeature = -1;
-    setGridSize(Point2i(20, 20));
-    m_maxCountFeatures = 100;
+    setGridSize(Point2i(40, 40));
+    m_maxCountFeatures = 200;
 }
 
 void FeatureDetector::setFirstImage(const ImageRef<uchar> & image)

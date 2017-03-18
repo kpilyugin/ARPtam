@@ -27,13 +27,13 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
   private volatile boolean mUpdateST = false;
 
   private final GLSurfaceView mView;
-  private final ARSystem mARSystem;
+  private final PtamSystem mPtam;
 
   private CameraManager mCamera;
 
-  ARRenderer(GLSurfaceView view, ARSystem arSystem) {
+  ARRenderer(GLSurfaceView view, PtamSystem ptam) {
     mView = view;
-    mARSystem = arSystem;
+    mPtam = ptam;
   }
 
   public void onResume() {
@@ -60,7 +60,7 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
       mCamera = new CameraManager(mSTexture) {
         @Override
         protected void processFrame(byte[] data) {
-          mARSystem.processFrame(data);
+          mPtam.processFrame(data);
           mView.requestRender();
         }
       };
@@ -86,7 +86,7 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
       mUpdateST = false;
     }
     mesh.render(shader, textureId);
-    mARSystem.renderTrackingInfo();
+//    mPtam.renderTrackingInfo();
   }
 
   public void onSurfaceChanged(GL10 unused, int width, int height) {

@@ -18,7 +18,7 @@ public class ARActivity extends Activity {
 
   private GLSurfaceView mGlView;
   private ARRenderer mRenderer;
-  private ARSystem mARSystem;
+  private PtamSystem mPtam;
   private Handler mHandler;
   private TextView mMessageView;
 
@@ -45,8 +45,8 @@ public class ARActivity extends Activity {
     }
 
     mGlView = new GLSurfaceView(this);
-    mARSystem = new ARSystem(PREVIEW_SIZE.getWidth(), PREVIEW_SIZE.getHeight());
-    mRenderer = new ARRenderer(mGlView, mARSystem);
+    mPtam = new PtamSystem(PREVIEW_SIZE.getWidth(), PREVIEW_SIZE.getHeight());
+    mRenderer = new ARRenderer(mGlView, mPtam);
     mGlView.setEGLContextClientVersion(2);
     mGlView.setRenderer(mRenderer);
     mGlView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
@@ -71,15 +71,24 @@ public class ARActivity extends Activity {
     mMessageView.setTextColor(Color.GREEN);
     buttonsLayout.addView(mMessageView);
 
-    final Button button = new Button(this);
-    button.setText("Next");
-    button.setOnClickListener(new View.OnClickListener() {
+    final Button next = new Button(this);
+    next.setText("Next");
+    next.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        mARSystem.nextTrackingState();
+        mPtam.nextTrackingState();
       }
     });
-    buttonsLayout.addView(button);
+    buttonsLayout.addView(next);
+
+    final Button reset = new Button(this);
+    reset.setText("Reset");
+    reset.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mPtam.reset();
+      }
+    });
 
     contentLayout.addView(buttonsLayout);
     setContentView(contentLayout);
@@ -111,7 +120,7 @@ public class ARActivity extends Activity {
     @Override
     public void run() {
       try {
-        String trackingInfo = mARSystem.getTrackingInfo();
+        String trackingInfo = mPtam.getMessage();
         mMessageView.setText(trackingInfo);
       } finally {
         mHandler.postDelayed(mUpdater, 200);
