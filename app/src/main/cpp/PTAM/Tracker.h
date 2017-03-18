@@ -58,6 +58,9 @@ public:
     std::string GetMessageForUser();
     void Reset();                   // Restart from scratch. Also tells the mapmaker to reset itself.
     void PokeTracker();
+    std::list<Trail> getTrails();
+    KeyFrame currentKeyFrame();
+    SE3<> cameraPose();
 
 protected:
     KeyFrame mCurrentKF;            // The current working frame as a keyframe struct
@@ -69,7 +72,6 @@ protected:
     Relocaliser mRelocaliser;       // Relocalisation module
 
     CVD::ImageRef mirSize;          // Image size of whole image
-
 
     // The following members are used for initial map tracking (to get the first stereo pair and correspondences):
     void TrackForInitialMap();      // This is called by TrackFrame if there is not a map yet.

@@ -127,10 +127,6 @@ public class ARActivity extends Activity {
       }
     }
   };
-
-  static {
-    System.loadLibrary("native-lib");
-  }
 }
 
 

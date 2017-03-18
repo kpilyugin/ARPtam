@@ -1,9 +1,13 @@
 #include "TrackerRenderer.h"
 #include <iostream>
+#include <vector>
 
 namespace AR {
 
 TrackerRenderer::TrackerRenderer() {
+    m_program = _compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
+    glGenBuffers(1, &m_vBuffer);
+    m_vertices = new float[4];
 }
 
 TrackerRenderer::~TrackerRenderer() {
@@ -14,31 +18,37 @@ TrackerRenderer::~TrackerRenderer() {
     }
 }
 
-void TrackerRenderer::renderLine(Point2f a, Point2f b, TVector<float> color) {
-    if (!m_program) {
-        _initGl();
-    }
+void TrackerRenderer::setColor(float r, float g, float b) {
+    GLuint colorLocation = (GLuint) glGetUniformLocation(m_program, "uColor");
+    glUniform3f(colorLocation, r, g, b);
+}
+
+void TrackerRenderer::renderLine(float ax, float ay, float bx, float by) {
     glUseProgram(m_program);
     glDepthFunc(GL_ALWAYS);
     GLuint ph = (GLuint) glGetAttribLocation(m_program, "vPosition");
     glBindBuffer(GL_ARRAY_BUFFER, m_vBuffer);
-    m_vertices[0] = a.x;
-    m_vertices[1] = a.y;
-    m_vertices[2] = b.x;
-    m_vertices[3] = b.y;
+    m_vertices[0] = ax;
+    m_vertices[1] = ay;
+    m_vertices[2] = bx;
+    m_vertices[3] = by;
     glBufferData(GL_ARRAY_BUFFER, 4 * 4, m_vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(ph, 2, GL_FLOAT, GL_FALSE, 4 * 2, 0);
     glEnableVertexAttribArray(ph);
-
-    GLuint colorLocation = (GLuint) glGetUniformLocation(m_program, "uColor");
-    glUniform3f(colorLocation, color[0], color[1], color[2]);
     glDrawArrays(GL_LINES, 0, 2);
 }
 
-void TrackerRenderer::_initGl() {
-    m_program = _compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
-    glGenBuffers(1, &m_vBuffer);
-    m_vertices = new float[4];
+void TrackerRenderer::renderPoint(float x, float y) {
+    glUseProgram(m_program);
+    glDepthFunc(GL_ALWAYS);
+    GLuint ph = (GLuint) glGetAttribLocation(m_program, "vPosition");
+    glBindBuffer(GL_ARRAY_BUFFER, m_vBuffer);
+    m_vertices[0] = x;
+    m_vertices[1] = y;
+    glBufferData(GL_ARRAY_BUFFER, 4 * 4, m_vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(ph, 2, GL_FLOAT, GL_FALSE, 4 * 2, 0);
+    glEnableVertexAttribArray(ph);
+    glDrawArrays(GL_POINTS, 0, 1);
 }
 
 GLuint TrackerRenderer::_compileShader(const char* vertexCode, const char* fragmentCode) {

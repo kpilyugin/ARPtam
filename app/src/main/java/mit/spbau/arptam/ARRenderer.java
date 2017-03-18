@@ -86,7 +86,7 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
       mUpdateST = false;
     }
     mesh.render(shader, textureId);
-//    mPtam.renderTrackingInfo();
+    mPtam.renderTrackingInfo();
   }
 
   public void onSurfaceChanged(GL10 unused, int width, int height) {

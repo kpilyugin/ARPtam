@@ -5,6 +5,7 @@ public class PtamSystem {
   private final long mHandle;
   private final int mWidth;
   private final int mHeight;
+  private long mRenderer;
 
   public PtamSystem(int width, int height) {
     mHandle = nCreate(width, height);
@@ -33,6 +34,13 @@ public class PtamSystem {
     return mMap;
   }
 
+  public void renderTrackingInfo() {
+    if (mRenderer == 0) {
+      mRenderer = nInitRenderer();
+    }
+    nRenderTrackingInfo(mHandle, mRenderer);
+  }
+
   private static native long nCreate(int width, int height);
 
   private static native void nProcessFrame(long handle, int width, int height, byte[] data);
@@ -44,4 +52,12 @@ public class PtamSystem {
   private static native String nGetMessage(long handle);
 
   private static native long nGetMap(long handle);
+
+  private static native long nInitRenderer();
+
+  private static native void nRenderTrackingInfo(long system, long renderer);
+
+  static {
+    System.loadLibrary("PTAM");
+  }
 }

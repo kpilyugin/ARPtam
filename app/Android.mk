@@ -26,7 +26,8 @@ $(PTAM_PATH)/PtamSystem.cc                      \
 $(PTAM_PATH)/Tracker.cc                      \
 $(PTAM_PATH)/ThreadPool.cc \
 src/main/jni/PtamSystemJni.cpp \
-src/main/jni/Logger.cpp \
+src/main/cpp/Logger.cpp \
+src/main/cpp/TrackerRenderer.cpp \
 
 LOCAL_STATIC_LIBRARIES += TooN
 LOCAL_STATIC_LIBRARIES += cpufeatures

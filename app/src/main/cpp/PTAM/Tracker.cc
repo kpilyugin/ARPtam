@@ -1106,7 +1106,6 @@ string Tracker::GetMessageForUser() {
     return mMessageForUser.str();
 }
 
-
 void Tracker::CalcSBIRotation() {
     mpSBILastFrame->MakeJacs();
     pair<SE2<>, double> result_pair;
@@ -1115,6 +1114,17 @@ void Tracker::CalcSBIRotation() {
     mv6SBIRot = se3Adjust.ln();
 }
 
+std::list<Trail> Tracker::getTrails() {
+    return mlTrails;
+}
+
+KeyFrame Tracker::currentKeyFrame() {
+    return mCurrentKF;
+}
+
+SE3<> Tracker::cameraPose() {
+    return mse3CamFromWorld;
+}
 
 ImageRef TrackerData::irImageSize;  // Static member of TrackerData lives here
 
