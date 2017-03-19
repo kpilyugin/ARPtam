@@ -16,7 +16,6 @@ public:
 private:
     GLuint m_program;
     GLuint m_vBuffer;
-    float* m_vertices;
 
     const char* VERTEX_SHADER = ""
         "attribute vec2 vPosition;\n "

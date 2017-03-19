@@ -5,6 +5,8 @@ public class PtamSystem {
   private final long mHandle;
   private final int mWidth;
   private final int mHeight;
+  private final float[] mRotation = new float[9];
+  private final float[] mPosition = new float[3];
   private long mRenderer;
 
   public PtamSystem(int width, int height) {
@@ -41,6 +43,16 @@ public class PtamSystem {
     nRenderTrackingInfo(mHandle, mRenderer);
   }
 
+  public float[] getRotation() {
+    nGetRotation(mHandle, mRotation);
+    return mRotation;
+  }
+
+  public float[] getPosition() {
+    nGetPosition(mHandle, mPosition);
+    return mPosition;
+  }
+
   private static native long nCreate(int width, int height);
 
   private static native void nProcessFrame(long handle, int width, int height, byte[] data);
@@ -56,6 +68,10 @@ public class PtamSystem {
   private static native long nInitRenderer();
 
   private static native void nRenderTrackingInfo(long system, long renderer);
+
+  private static native void nGetRotation(long handle, float[] rotation);
+
+  private static native void nGetPosition(long handle, float[] translation);
 
   static {
     System.loadLibrary("PTAM");

@@ -62,14 +62,11 @@ public class ARActivity extends Activity {
     buttonsLayout.setGravity(Gravity.END);
     buttonsLayout.setLayoutParams(layoutParams);
 
-    TextView fpsView = new TextView(this);
-    fpsView.setTextColor(Color.GREEN);
-    fpsView.setText("FPS: 0");
-    buttonsLayout.addView(fpsView);
-
     mMessageView = new TextView(this);
     mMessageView.setTextColor(Color.GREEN);
-    buttonsLayout.addView(mMessageView);
+    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+        1920 / 4, ViewGroup.LayoutParams.WRAP_CONTENT);
+    buttonsLayout.addView(mMessageView, params);
 
     final Button next = new Button(this);
     next.setText("Next");
@@ -79,7 +76,9 @@ public class ARActivity extends Activity {
         mPtam.nextTrackingState();
       }
     });
-    buttonsLayout.addView(next);
+    params = new LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    buttonsLayout.addView(next, params);
 
     final Button reset = new Button(this);
     reset.setText("Reset");
@@ -89,6 +88,7 @@ public class ARActivity extends Activity {
         mPtam.reset();
       }
     });
+    buttonsLayout.addView(reset, params);
 
     contentLayout.addView(buttonsLayout);
     setContentView(contentLayout);

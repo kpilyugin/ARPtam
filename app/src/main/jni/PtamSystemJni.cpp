@@ -76,16 +76,18 @@ Java_mit_spbau_arptam_PtamSystem_nRenderTrackingInfo(JNIEnv* env, jclass type, j
     Map* pMap = ptam->map();
     if (pMap->IsGood()) {
         //tracking
+        pMap->LockMap();
         renderer->setProgram();
         renderer->setColor(0, 1, 0);
         for (auto& mapPoint: pMap->vpPoints) {
             TrackerData* tData = mapPoint->pTData;
-            if (tData) {
+            if (tData && mapPoint->bFoundRecent) {
                 renderer->renderPoint(
                     tData->v2Image[0] * scale[0] - 1.0,
                     1.0f - tData->v2Image[1] * scale[1]);
             }
         }
+        pMap->UnlockMap();
     } else {
         //initializing
         Tracker* pTracker = ptam->tracker();
@@ -100,6 +102,30 @@ Java_mit_spbau_arptam_PtamSystem_nRenderTrackingInfo(JNIEnv* env, jclass type, j
                 1.0 - trail.irCurrentPos.y * scale[1]);
         }
     }
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_PtamSystem_nGetRotation(JNIEnv* env, jclass type, jlong handle, jfloatArray jRotation) {
+    jfloat* rotation = env->GetFloatArrayElements(jRotation, NULL);
+    const SE3<>& se3 = ptamSystem(handle)->tracker()->cameraPose();
+    const Matrix<3, 3>& m = se3.get_rotation().get_matrix();
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            rotation[3 * i + j] = (float) m[i][j];
+        }
+    }
+    env->ReleaseFloatArrayElements(jRotation, rotation, 0);
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_PtamSystem_nGetPosition(JNIEnv* env, jclass type, jlong handle, jfloatArray jPosition) {
+    jfloat* position = env->GetFloatArrayElements(jPosition, NULL);
+    const SE3<>& se3 = ptamSystem(handle)->tracker()->cameraPose();
+    const Vector<3>& pos = se3.get_translation();
+    for (int i = 0; i < 3; ++i) {
+        position[i] = (float) pos[i];
+    }
+    env->ReleaseFloatArrayElements(jPosition, position, 0);
 }
 
 }

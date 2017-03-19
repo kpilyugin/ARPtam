@@ -5,19 +5,18 @@
 TrackerRenderer::TrackerRenderer() {
     m_program = _compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
     glGenBuffers(1, &m_vBuffer);
-    m_vertices = new float[4];
 }
 
 TrackerRenderer::~TrackerRenderer() {
     if (m_program) {
         glDeleteProgram(m_program);
         glDeleteBuffers(1, &m_vBuffer);
-        delete[] m_vertices;
     }
 }
 
 void TrackerRenderer::setProgram() {
     glUseProgram(m_program);
+    glDepthFunc(GL_ALWAYS);
 }
 
 void TrackerRenderer::setColor(float r, float g, float b) {
@@ -26,36 +25,29 @@ void TrackerRenderer::setColor(float r, float g, float b) {
 }
 
 void TrackerRenderer::renderLine(double ax, double ay, double bx, double by) {
-    glDepthFunc(GL_ALWAYS);
     GLuint ph = (GLuint) glGetAttribLocation(m_program, "vPosition");
     glBindBuffer(GL_ARRAY_BUFFER, m_vBuffer);
-    m_vertices[0] = (float) ax;
-    m_vertices[1] = (float) ay;
-    m_vertices[2] = (float) bx;
-    m_vertices[3] = (float) by;
-    glBufferData(GL_ARRAY_BUFFER, 4 * 4, m_vertices, GL_STATIC_DRAW);
+    GLfloat vertices[4] = {ax, ay, bx, by};
+    glBufferData(GL_ARRAY_BUFFER, 4 * 4, vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(ph, 2, GL_FLOAT, GL_FALSE, 4 * 2, 0);
     glEnableVertexAttribArray(ph);
     glDrawArrays(GL_LINES, 0, 2);
 }
 
 void TrackerRenderer::renderPoint(double x, double y) {
-    if (true) {
-        renderLine(x - 0.01, y - 0.01, x + 0.01, y + 0.01);
-        renderLine(x + 0.01, y - 0.01, x - 0.01, y + 0.01);
-    }
-    glUseProgram(m_program);
-    glDepthFunc(GL_ALWAYS);
     GLuint ph = (GLuint) glGetAttribLocation(m_program, "vPosition");
     glBindBuffer(GL_ARRAY_BUFFER, m_vBuffer);
-    m_vertices[0] = (float) x - 0.05f;
-    m_vertices[1] = (float) y - 0.05f;
-    m_vertices[2] = (float) x + 0.05f;
-    m_vertices[3] = (float) y + 0.05f;
-    glBufferData(GL_ARRAY_BUFFER, 4 * 4, m_vertices, GL_STATIC_DRAW);
+    float offset = 0.01;
+    GLfloat vertices[8] = {
+        x, y + offset,
+        x - offset, y,
+        x + offset, y,
+        x, y - offset
+    };
+    glBufferData(GL_ARRAY_BUFFER, 4 * 8, vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(ph, 2, GL_FLOAT, GL_FALSE, 4 * 2, 0);
     glEnableVertexAttribArray(ph);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 1);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 GLuint TrackerRenderer::_compileShader(const char* vertexCode, const char* fragmentCode) {

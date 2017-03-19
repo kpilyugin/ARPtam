@@ -168,6 +168,9 @@ void Tracker::TrackFrame(CVD::Image<CVD::byte>& imFrame) {
                 //	    mMessageForUser << " Found " << mnMeasFound << " of " << mnMeasAttempted <<". (";
                 mMessageForUser << " Map: " << mMap.vpPoints.size() << "P, " <<
                 mMap.vpKeyFrames.size() << "KF";
+
+                mMessageForUser << " rot: " << mse3CamFromWorld.get_rotation() <<
+                    ", pos" << mse3CamFromWorld.get_translation();
             }
 
             // Heuristics to check if a key-frame should be added to the map:

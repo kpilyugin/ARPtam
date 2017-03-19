@@ -6,6 +6,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLSurfaceView;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
