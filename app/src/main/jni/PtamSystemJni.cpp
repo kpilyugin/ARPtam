@@ -24,7 +24,7 @@ Java_mit_spbau_arptam_PtamSystem_nCreate(JNIEnv* env, jclass type, jint width, j
 
 JNIEXPORT void JNICALL
 Java_mit_spbau_arptam_PtamSystem_nProcessFrame(JNIEnv* env, jclass type, jlong handle, jint width,
-                                               jint height, jbyteArray jData) {
+    jint height, jbyteArray jData) {
     PtamSystem* arSystem = reinterpret_cast<PtamSystem*>(handle);
 
     jsize size = width * height;
@@ -63,31 +63,41 @@ Java_mit_spbau_arptam_PtamSystem_nInitRenderer(JNIEnv* env, jclass type) {
     return reinterpret_cast<jlong>(renderer);
 }
 
-
-
 JNIEXPORT void JNICALL
 Java_mit_spbau_arptam_PtamSystem_nRenderTrackingInfo(JNIEnv* env, jclass type, jlong hSystem,
-                                                     jlong hRenderer) {
+    jlong hRenderer) {
     PtamSystem* ptam = ptamSystem(hSystem);
     TrackerRenderer* renderer = reinterpret_cast<TrackerRenderer*>(hRenderer);
+    const ImageRef& imageSize = ptam->image()->size();
+    Vector<2> scale;
+    scale[0] = 0.75f * 2.0f / static_cast<float>(imageSize.x);
+    scale[1] = 2.0f / static_cast<float>(imageSize.y);
 
     Map* pMap = ptam->map();
     if (pMap->IsGood()) {
         //tracking
-        vector<MapPoint*>& points = pMap->vpPoints;
+        renderer->setProgram();
+        renderer->setColor(0, 1, 0);
         for (auto& mapPoint: pMap->vpPoints) {
             TrackerData* tData = mapPoint->pTData;
-            renderer->setColor(0, 0, 1);
-            tData->v2Image;
-            renderer->renderPoint((float) tData->v2Image[0], (float) tData->v2Image[1]);
+            if (tData) {
+                renderer->renderPoint(
+                    tData->v2Image[0] * scale[0] - 1.0,
+                    1.0f - tData->v2Image[1] * scale[1]);
+            }
         }
     } else {
         //initializing
         Tracker* pTracker = ptam->tracker();
         std::list<Trail> trails = pTracker->getTrails();
-        renderer->setColor(0, 1, 0);
+        renderer->setProgram();
+        renderer->setColor(1, 1, 0);
         for (auto& trail: trails) {
-            renderer->renderLine(trail.irInitialPos.x, trail.irInitialPos.y, trail.irCurrentPos.x, trail.irCurrentPos.y);
+            renderer->renderLine(
+                trail.irInitialPos.x * scale[0] - 1.0,
+                1.0 - trail.irInitialPos.y * scale[1],
+                trail.irCurrentPos.x * scale[0] - 1.0,
+                1.0 - trail.irCurrentPos.y * scale[1]);
         }
     }
 }

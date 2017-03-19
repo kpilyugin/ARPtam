@@ -2,16 +2,16 @@
 #define TRACKERRENDERER_H
 
 #include <GLES2/gl2.h>
-#include "Point2.h"
 
 class TrackerRenderer {
 
 public:
     TrackerRenderer();
     ~TrackerRenderer();
+    void setProgram();
     void setColor(float r, float g, float b);
-    void renderLine(float ax, float ay, float bx, float by);
-    void renderPoint(float x, float y);
+    void renderLine(double ax, double ay, double bx, double by);
+    void renderPoint(double x, double y);
 
 private:
     GLuint m_program;
