@@ -12,6 +12,8 @@ import android.widget.*;
 
 import java.io.*;
 
+import mit.spbau.arptam.streetview.StreetView;
+
 public class ARActivity extends Activity {
 
   public static final Size PREVIEW_SIZE = new Size(640, 480);
@@ -116,6 +118,16 @@ public class ARActivity extends Activity {
       }
     });
     buttonsLayout.addView(loadMap, params);
+
+    final Button saveImage = new Button(this);
+    saveImage.setText("Save sample image");
+    saveImage.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        StreetView.saveImageToDisk(folder.getAbsolutePath());
+      }
+    });
+    buttonsLayout.addView(saveImage, params);
 
     contentLayout.addView(buttonsLayout);
     setContentView(contentLayout);
