@@ -5,12 +5,12 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
+import android.os.*;
 import android.util.Size;
 import android.view.*;
 import android.widget.*;
+
+import java.io.*;
 
 public class ARActivity extends Activity {
 
@@ -89,6 +89,33 @@ public class ARActivity extends Activity {
       }
     });
     buttonsLayout.addView(reset, params);
+
+    final Button saveMap = new Button(this);
+    final File folder = new File(
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "PTAM");
+    if (!folder.exists()) {
+      //noinspection ResultOfMethodCallIgnored
+      folder.mkdirs();
+    }
+    System.out.println("folder.getAbsolutePath() = " + folder.getAbsolutePath());
+    saveMap.setText("Save map");
+    saveMap.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mPtam.saveMap(folder.getAbsolutePath());
+      }
+    });
+    buttonsLayout.addView(saveMap, params);
+
+    final Button loadMap = new Button(this);
+    loadMap.setText("Load map");
+    loadMap.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mPtam.loadMap(folder.getAbsolutePath());
+      }
+    });
+    buttonsLayout.addView(loadMap, params);
 
     contentLayout.addView(buttonsLayout);
     setContentView(contentLayout);

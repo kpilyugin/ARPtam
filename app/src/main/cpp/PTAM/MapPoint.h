@@ -20,14 +20,15 @@
 #include <cvd/timer.h>
 #include <set>
 #include <stdint.h>
+#include "tinyxml2.h"
+#include "MapSerialization.h"
 
 namespace PTAM {
 using namespace TooN;
+using namespace tinyxml2;
 
 class KeyFrame;
-
 class TrackerData;
-
 class MapMakerData;
 
 
@@ -86,8 +87,8 @@ struct MapPoint {
 
     bool bFoundRecent; //was this mappoint found during last tracker round?
 
-//    XMLElement* save(MapSerializationHelper& helper);
-//    void load(const XMLElement* mappoint, MapSerializationHelper& helper);
+    XMLElement* save(MapSerializationHelper& helper);
+    void load(const XMLElement* mappoint, MapSerializationHelper& helper);
 
 };
 

@@ -17,6 +17,7 @@ include_directories(ndk-modules)
 include_directories(ndk-modules/agast/include/agast)
 include_directories(ndk-modules/TooN/include)
 include_directories(ndk-modules/cvd/installfiles)
+include_directories(ndk-modules/tinyxml2/tinyxml2-master)
 
 add_library( # Sets the name of the library.
             native-lib
@@ -28,34 +29,6 @@ add_library( # Sets the name of the library.
             # Associated headers in the same location as their source
             # file are automatically included.
 
-            src/main/cpp/AR/Camera.cpp
-            src/main/cpp/AR/ImageProcessing.cpp
-            src/main/cpp/AR/CalibrationFrame.cpp
-            src/main/cpp/AR/CameraCalibrator.cpp
-            src/main/cpp/AR/CalibrationCorner.cpp
-            src/main/cpp/AR/faster_corner_10.cxx
-            src/main/cpp/AR/OpticalFlow.cpp
-            src/main/cpp/AR/OpticalFlowCalculator.cpp
-            src/main/cpp/AR/FeatureDetector.cpp
-            src/main/cpp/AR/KeyFrame.cpp
-            src/main/cpp/AR/MapPoint.cpp
-            src/main/cpp/AR/Map.cpp
-            src/main/cpp/AR/Feature.cpp
-            src/main/cpp/AR/FastCorner.cpp
-            src/main/cpp/AR/MapProjector.cpp
-            src/main/cpp/AR/ARSystem.cpp
-            src/main/cpp/AR/Frame.cpp
-            src/main/cpp/AR/PreviewFrame.cpp
-            src/main/cpp/AR/MapInitializer.cpp
-            src/main/cpp/AR/PerformanceMonitor.cpp
-            src/main/cpp/AR/LocationOptimizer.cpp
-            src/main/cpp/AR/Tracker.cpp
-            src/main/cpp/AR/MapPointsDetector.cpp
-            src/main/cpp/AR/MapResourceObject.cpp
-            src/main/cpp/AR/MapResourcesManager.cpp
-            src/main/cpp/AR/MapResourceLocker.cpp
-            src/main/cpp/AR/TrackerRenderer.cpp
-
             src/main/cpp/PTAM/ATANCamera.cc
             src/main/cpp/PTAM/Bundle.cc
             src/main/cpp/PTAM/HomographyInit.cc
@@ -63,6 +36,7 @@ add_library( # Sets the name of the library.
             src/main/cpp/PTAM/Map.cc
             src/main/cpp/PTAM/MapMaker.cc
             src/main/cpp/PTAM/MapPoint.cc
+            src/main/cpp/PTAM/MapSerialization.cc
             src/main/cpp/PTAM/MiniPatch.cc
             src/main/cpp/PTAM/PatchFinder.cc
             src/main/cpp/PTAM/PtamSystem.cc
@@ -72,7 +46,6 @@ add_library( # Sets the name of the library.
             src/main/cpp/PTAM/Tracker.cc
             src/main/cpp/PTAM/ThreadPool.cc
 
-            src/main/jni/ARSystemJni.cpp
             src/main/jni/PtamSystemJni.cpp
             src/main/cpp/Logger.cpp
             src/main/cpp/TrackerRenderer.cpp

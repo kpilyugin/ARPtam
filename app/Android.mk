@@ -17,6 +17,7 @@ $(PTAM_PATH)/KeyFrame.cc                      \
 $(PTAM_PATH)/Map.cc                      \
 $(PTAM_PATH)/MapMaker.cc                      \
 $(PTAM_PATH)/MapPoint.cc                      \
+$(PTAM_PATH)/MapSerialization.cc                      \
 $(PTAM_PATH)/MiniPatch.cc                      \
 $(PTAM_PATH)/PatchFinder.cc                      \
 $(PTAM_PATH)/Relocaliser.cc                      \

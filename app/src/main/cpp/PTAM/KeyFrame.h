@@ -25,7 +25,7 @@
 #include <vector>
 #include <set>
 #include <map>
-
+#include "MapSerialization.h"
 
 namespace PTAM {
 using namespace TooN;
@@ -51,24 +51,24 @@ struct Measurement {
         SRC_TRACKER, SRC_REFIND, SRC_ROOT, SRC_TRAIL, SRC_EPIPOLAR
     } Source; // Where has this measurement come frome?
 
-//    inline XMLElement* save(MapSerializationHelper &helper) {
-//        XMLDocument* doc = helper.GetXMLDocument();
-//        XMLElement* measurement = doc->NewElement("Measurement");
-//
-//        measurement->SetAttribute("nLevel", nLevel);
-//        measurement->SetAttribute("bSubPix", bSubPix);
-//        measurement->SetAttribute("v2RootPos", helper.saveVector(v2RootPos).c_str());
-//        measurement->SetAttribute("Source", Source);
-//
-//        return measurement;
-//    }
-//
-//    inline void load(const XMLElement* measurement, MapSerializationHelper &helper) {
-//        measurement->QueryAttribute("nLevel", &nLevel);
-//        measurement->QueryAttribute("bSubPix", &bSubPix);
-//        v2RootPos = helper.loadVector<2>(string(measurement->FindAttribute("v2RootPos")->Value()));
-//        measurement->QueryAttribute("Source", (int*) &Source);
-//    }
+    inline XMLElement* save(MapSerializationHelper &helper) {
+        XMLDocument* doc = helper.GetXMLDocument();
+        XMLElement* measurement = doc->NewElement("Measurement");
+
+        measurement->SetAttribute("nLevel", nLevel);
+        measurement->SetAttribute("bSubPix", bSubPix);
+        measurement->SetAttribute("v2RootPos", helper.saveVector(v2RootPos).c_str());
+        measurement->SetAttribute("Source", Source);
+
+        return measurement;
+    }
+
+    inline void load(const XMLElement* measurement, MapSerializationHelper &helper) {
+        measurement->QueryAttribute("nLevel", &nLevel);
+        measurement->QueryAttribute("bSubPix", &bSubPix);
+        v2RootPos = helper.loadVector<2>(string(measurement->FindAttribute("v2RootPos")->Value()));
+        measurement->QueryAttribute("Source", (int*) &Source);
+    }
 };
 
 // Each keyframe is made of LEVELS pyramid levels, stored in struct Level.
@@ -116,64 +116,67 @@ struct KeyFrame {
 
     SmallBlurryImage* pSBI; // The relocaliser uses this
 
+    XMLElement* save(MapSerializationHelper &helper) {
+        XMLDocument* doc = helper.GetXMLDocument();
+        XMLElement* keyframe = doc->NewElement("KeyFrame");
 
-//    XMLElement* save(MapSerializationHelper &helper) {
-//        XMLDocument* doc = helper.GetXMLDocument();
-//        XMLElement* keyframe = doc->NewElement("KeyFrame");
-//
-//        int kfid = helper.GetKeyFrameID(this);
-//        keyframe->SetAttribute("ID", kfid);
-//
-//        helper.SaveImage(aLevels[0].im, kfid);
-//
-//        keyframe->SetAttribute("se3CfromW", helper.saveVector(se3CfromW.ln()).c_str());
-//        keyframe->SetAttribute("bFixed", bFixed);
-//        keyframe->SetAttribute("dSceneDepthMean", dSceneDepthMean);
-//        keyframe->SetAttribute("dSceneDepthSigma", dSceneDepthSigma);
-//
-//        XMLElement* measurements = doc->NewElement("Measurements");
-//        for (auto outer_iter = mMeasurements.begin();
-//             outer_iter != mMeasurements.end(); ++outer_iter) {
-//            XMLElement* measurement = outer_iter->second.save(helper);
-//            measurement->SetAttribute("MapPointID", helper.GetMapPointID(outer_iter->first));
-//            measurements->InsertEndChild(measurement);
-//        }
-//
-//        keyframe->InsertEndChild(measurements);
-//
-//        return keyframe;
-//    }
-//
-//    void load(const XMLElement* keyframe, MapSerializationHelper &helper) {
-//
-//        int kfid = helper.GetKeyFrameID(this);
-//        CVD::Image<CVD::byte> im;
-//        helper.LoadImage(im, kfid);
-//
-//        MakeKeyFrame_Lite(im);
-//
-//        se3CfromW = SE3<>(
-//                helper.loadVector<6>(string(keyframe->FindAttribute("se3CfromW")->Value())));
-//        keyframe->QueryAttribute("bFixed", &bFixed);
-//        keyframe->QueryAttribute("dSceneDepthMean", &dSceneDepthMean);
-//        keyframe->QueryAttribute("dSceneDepthSigma", &dSceneDepthSigma);
-//
-//        const XMLElement* measurements = keyframe->FirstChildElement("Measurements");
-//        if (measurements != NULL) {
-//            const XMLElement* measurement = measurements->FirstChildElement("Measurement");
-//            while (measurement != NULL) {
-//                Measurement m;
-//                m.load(measurement, helper);
-//                int mpid;
-//                measurement->QueryAttribute("MapPointID", &mpid);
-//                mMeasurements[helper.GetMapPoint(mpid)] = m;
-//
-//                measurement = measurement->NextSiblingElement("Measurement");
-//            }
-//        }
-//
-//        MakeKeyFrame_Rest();
-//    }
+        int kfid = helper.GetKeyFrameID(this);
+        keyframe->SetAttribute("ID", kfid);
+
+        try {
+            helper.SaveImage(aLevels[0].im, kfid);
+        } catch (...) {
+            cout << "ERROR SAVING IMAGE!" << endl;
+        }
+
+        keyframe->SetAttribute("se3CfromW", helper.saveVector(se3CfromW.ln()).c_str());
+        keyframe->SetAttribute("bFixed", bFixed);
+        keyframe->SetAttribute("dSceneDepthMean", dSceneDepthMean);
+        keyframe->SetAttribute("dSceneDepthSigma", dSceneDepthSigma);
+
+        XMLElement* measurements = doc->NewElement("Measurements");
+        for (auto outer_iter = mMeasurements.begin();
+             outer_iter != mMeasurements.end(); ++outer_iter) {
+            XMLElement* measurement = outer_iter->second.save(helper);
+            measurement->SetAttribute("MapPointID", helper.GetMapPointID(outer_iter->first));
+            measurements->InsertEndChild(measurement);
+        }
+
+        keyframe->InsertEndChild(measurements);
+
+        return keyframe;
+    }
+
+    void load(const XMLElement* keyframe, MapSerializationHelper &helper) {
+
+        int kfid = helper.GetKeyFrameID(this);
+        CVD::Image<CVD::byte> im;
+        helper.LoadImage(im, kfid);
+
+        MakeKeyFrame_Lite(im);
+
+        se3CfromW = SE3<>(
+                helper.loadVector<6>(string(keyframe->FindAttribute("se3CfromW")->Value())));
+        keyframe->QueryAttribute("bFixed", &bFixed);
+        keyframe->QueryAttribute("dSceneDepthMean", &dSceneDepthMean);
+        keyframe->QueryAttribute("dSceneDepthSigma", &dSceneDepthSigma);
+
+        const XMLElement* measurements = keyframe->FirstChildElement("Measurements");
+        if (measurements != NULL) {
+            const XMLElement* measurement = measurements->FirstChildElement("Measurement");
+            while (measurement != NULL) {
+                Measurement m;
+                m.load(measurement, helper);
+                int mpid;
+                measurement->QueryAttribute("MapPointID", &mpid);
+                mMeasurements[helper.GetMapPoint(mpid)] = m;
+
+                measurement = measurement->NextSiblingElement("Measurement");
+            }
+        }
+
+        MakeKeyFrame_Rest();
+    }
 };
 
 typedef std::map<MapPoint*, Measurement>::iterator meas_it;  // For convenience, and to work around an emacs paren-matching bug

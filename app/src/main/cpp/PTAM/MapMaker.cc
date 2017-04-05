@@ -1605,207 +1605,203 @@ void MapMaker::GUICommandHandler(string sCommand, string sParams)  // Called by 
 };
 
 void MapMaker::SaveMap(string filename) {
-//    //lock map and wait until accepted...
-//    bool waslocked = mbLockMap;
-//    mbLockMap = true;
-//    RequestContinue();
-//
-//    //TODO delete files in folder
-//
-//    MapSerializationHelper helper(filename);
-//    helper.CreateAndCleanUpMapFolder();
-//
-//    //register all pointers for cross referencing
-//    for (int i = 0; i < mMap.vpKeyFrames.size(); i++)
-//        helper.RegisterKeyFrame(mMap.vpKeyFrames[i]);
-//    for (int i = 0; i < mvpKeyFrameQueue.size(); i++)
-//        helper.RegisterKeyFrame(mvpKeyFrameQueue[i]);
-//    for (int i = 0; i < mMap.vpPoints.size(); i++)
-//        helper.RegisterMapPoint(mMap.vpPoints[i]);
-//    for (int i = 0; i < mMap.vpPointsTrash.size(); i++)
-//        helper.RegisterMapPoint(mMap.vpPointsTrash[i]);
-//
-//    XMLDocument* doc = helper.GetXMLDocument();
-//
-//    XMLElement* map = doc->NewElement("Map");
-//
-//    //save camera
-//    map->InsertEndChild(mCamera.save(
-//            helper)); //TODO allow different cameras for each keyframe, at the moment saving the camera is useless!!!
-//
-//    //save map
-//    XMLElement* keyframes = doc->NewElement("KeyFrames");
-//    for (int i = 0; i < mMap.vpKeyFrames.size(); i++)
-//        keyframes->InsertEndChild(mMap.vpKeyFrames[i]->save(helper));
-//    map->InsertEndChild(keyframes);
-//
-//    XMLElement* points = doc->NewElement("Points");
-//    for (int i = 0; i < mMap.vpPoints.size(); i++)
-//        points->InsertEndChild(mMap.vpPoints[i]->save(helper));
-//    map->InsertEndChild(points);
-//
-//    XMLElement* trashpoints = doc->NewElement("TrashPoints");
-//    for (int i = 0; i < mMap.vpPointsTrash.size(); i++)
-//        trashpoints->InsertEndChild(mMap.vpPointsTrash[i]->save(helper));
-//    map->InsertEndChild(trashpoints);
-//
-//    //save mapmaker stuff
-//    XMLElement* newkeyframes = doc->NewElement("NewKeyFrames");
-//    for (int i = 0; i < mvpKeyFrameQueue.size(); i++)
-//        newkeyframes->InsertEndChild(mvpKeyFrameQueue[i]->save(helper));
-//    map->InsertEndChild(newkeyframes);
-//
-//    XMLElement* failures = doc->NewElement("FailureQueue");
-//    for (auto iter = mvFailureQueue.begin(); iter != mvFailureQueue.end(); ++iter) {
-//        XMLElement* failure = doc->NewElement("Failure");
-//        failure->SetAttribute("KeyFrameID", helper.GetKeyFrameID(iter->first));
-//        failure->SetAttribute("MapPointID", helper.GetMapPointID(iter->second));
-//        failures->InsertEndChild(failure);
-//    }
-//    map->InsertEndChild(failures);
-//
-//    XMLElement* newmappoints = doc->NewElement(
-//            "NewMapPoints"); //TODO save the same way as in mmdata as its just a list of numbers?
-//    std::queue<MapPoint*> tmpqueue = mqNewQueue;
-//    while (!tmpqueue.empty()) {
-//        XMLElement* newmp = doc->NewElement("NewMapPoint");
-//        newmp->SetAttribute("MapPointID", helper.GetMapPointID(tmpqueue.front()));
-//        newmappoints->InsertEndChild(newmp);
-//
-//        tmpqueue.pop();
-//    }
-//    map->InsertEndChild(newmappoints);
-//
-//    map->SetAttribute("mdWiggleScale", mdWiggleScale);
-//    map->SetAttribute("mdWiggleScaleDepthNormalized", mdWiggleScaleDepthNormalized);
-//    map->SetAttribute("mdFirstKeyFrameDist", mdFirstKeyFrameDist);
-//
-//    doc->InsertEndChild(map);
-//    helper.SaveXMLDocument();
-//
-//    mbLockMap = waslocked;
+    //lock map and wait until accepted...
+    bool waslocked = mbLockMap;
+    mbLockMap = true;
+    RequestContinue();
+    //TODO delete files in folder
+
+    MapSerializationHelper helper(filename);
+    helper.CreateAndCleanUpMapFolder();
+
+    //register all pointers for cross referencing
+    for (int i = 0; i < mMap.vpKeyFrames.size(); i++)
+        helper.RegisterKeyFrame(mMap.vpKeyFrames[i]);
+    for (int i = 0; i < mvpKeyFrameQueue.size(); i++)
+        helper.RegisterKeyFrame(mvpKeyFrameQueue[i]);
+    for (int i = 0; i < mMap.vpPoints.size(); i++)
+        helper.RegisterMapPoint(mMap.vpPoints[i]);
+    for (int i = 0; i < mMap.vpPointsTrash.size(); i++)
+        helper.RegisterMapPoint(mMap.vpPointsTrash[i]);
+
+    XMLDocument* doc = helper.GetXMLDocument();
+    XMLElement* map = doc->NewElement("Map");
+
+    //save camera
+    map->InsertEndChild(mCamera.save(helper));
+    //TODO allow different cameras for each keyframe, at the moment saving the camera is useless!!!
+
+    //save map
+    XMLElement* keyframes = doc->NewElement("KeyFrames");
+    for (int i = 0; i < mMap.vpKeyFrames.size(); i++)
+        keyframes->InsertEndChild(mMap.vpKeyFrames[i]->save(helper));
+    map->InsertEndChild(keyframes);
+
+    XMLElement* points = doc->NewElement("Points");
+    for (int i = 0; i < mMap.vpPoints.size(); i++)
+        points->InsertEndChild(mMap.vpPoints[i]->save(helper));
+    map->InsertEndChild(points);
+
+    XMLElement* trashpoints = doc->NewElement("TrashPoints");
+    for (int i = 0; i < mMap.vpPointsTrash.size(); i++)
+        trashpoints->InsertEndChild(mMap.vpPointsTrash[i]->save(helper));
+    map->InsertEndChild(trashpoints);
+
+    //save mapmaker stuff
+    XMLElement* newkeyframes = doc->NewElement("NewKeyFrames");
+    for (int i = 0; i < mvpKeyFrameQueue.size(); i++)
+        newkeyframes->InsertEndChild(mvpKeyFrameQueue[i]->save(helper));
+    map->InsertEndChild(newkeyframes);
+
+    XMLElement* failures = doc->NewElement("FailureQueue");
+    for (auto iter = mvFailureQueue.begin(); iter != mvFailureQueue.end(); ++iter) {
+        XMLElement* failure = doc->NewElement("Failure");
+        failure->SetAttribute("KeyFrameID", helper.GetKeyFrameID(iter->first));
+        failure->SetAttribute("MapPointID", helper.GetMapPointID(iter->second));
+        failures->InsertEndChild(failure);
+    }
+    map->InsertEndChild(failures);
+
+    XMLElement* newmappoints = doc->NewElement(
+            "NewMapPoints"); //TODO save the same way as in mmdata as its just a list of numbers?
+    std::queue<MapPoint*> tmpqueue = mqNewQueue;
+    while (!tmpqueue.empty()) {
+        XMLElement* newmp = doc->NewElement("NewMapPoint");
+        newmp->SetAttribute("MapPointID", helper.GetMapPointID(tmpqueue.front()));
+        newmappoints->InsertEndChild(newmp);
+
+        tmpqueue.pop();
+    }
+    map->InsertEndChild(newmappoints);
+
+    map->SetAttribute("mdWiggleScale", mdWiggleScale);
+    map->SetAttribute("mdWiggleScaleDepthNormalized", mdWiggleScaleDepthNormalized);
+    map->SetAttribute("mdFirstKeyFrameDist", mdFirstKeyFrameDist);
+
+    doc->InsertEndChild(map);
+    helper.SaveXMLDocument();
+
+    mbLockMap = waslocked;
 }
 
 void MapMaker::LoadMap(string filename) {
-//    bool waslocked = mbLockMap;
-//    mbLockMap = true;
-//    RequestContinue();
-//    mMap.LockMap();
-//    Reset();
-//
-//    MapSerializationHelper helper(filename);
-//    helper.LoadXMLDocument();
-//    XMLDocument* doc = helper.GetXMLDocument();
-//
-//    XMLElement* map = doc->FirstChildElement("Map");
-//
-//    //create empty object for each keyframe and mappoint and register pointer
-//    XMLElement* keyframes = map->FirstChildElement("KeyFrames");
-//    XMLElement* keyframe = keyframes->FirstChildElement("KeyFrame");
-//    while (keyframe != NULL) {
-//        KeyFrame* kf = new KeyFrame();
-//        helper.RegisterKeyFrame(
-//                kf); //TODO maybe register keyframes and mappoints with saved IDs (instead of assuming to be in same order as during save) to allow easy manual map editing?
-//        mMap.vpKeyFrames.push_back(kf);
-//        keyframe = keyframe->NextSiblingElement("KeyFrame");
-//    }
-//    keyframes = map->FirstChildElement("NewKeyFrames");
-//    keyframe = keyframes->FirstChildElement("KeyFrame");
-//    while (keyframe != NULL) {
-//        KeyFrame* kf = new KeyFrame();
-//        helper.RegisterKeyFrame(kf);
-//        mvpKeyFrameQueue.push_back(kf);
-//        keyframe = keyframe->NextSiblingElement("KeyFrame");
-//    }
-//    XMLElement* mappoints = map->FirstChildElement("Points");
-//    XMLElement* mappoint = mappoints->FirstChildElement("MapPoint");
-//    while (mappoint != NULL) {
-//        MapPoint* mp = new MapPoint();
-//        helper.RegisterMapPoint(mp);
-//        mMap.vpPoints.push_back(mp);
-//        mappoint = mappoint->NextSiblingElement("MapPoint");
-//    }
-//    mappoints = map->FirstChildElement("TrashPoints");
-//    mappoint = mappoints->FirstChildElement("MapPoint");
-//    while (mappoint != NULL) {
-//        MapPoint* mp = new MapPoint();
-//        helper.RegisterMapPoint(mp);
-//        mMap.vpPointsTrash.push_back(mp);
-//        mappoint = mappoint->NextSiblingElement("MapPoint");
-//    }
-//
-//    //load actual data
-//    keyframes = map->FirstChildElement("KeyFrames");
-//    keyframe = keyframes->FirstChildElement("KeyFrame");
-//    while (keyframe != NULL) {
-//        int kfid;
-//        keyframe->QueryAttribute("ID", &kfid);
-//        helper.GetKeyFrame(kfid)->load(keyframe, helper);
-//        keyframe = keyframe->NextSiblingElement("KeyFrame");
-//    }
-//    keyframes = map->FirstChildElement("NewKeyFrames");
-//    keyframe = keyframes->FirstChildElement("KeyFrame");
-//    while (keyframe != NULL) {
-//        int kfid;
-//        keyframe->QueryAttribute("ID", &kfid);
-//        helper.GetKeyFrame(kfid)->load(keyframe, helper);
-//        keyframe = keyframe->NextSiblingElement("KeyFrame");
-//    }
-//
-//    mappoints = map->FirstChildElement("Points");
-//    mappoint = mappoints->FirstChildElement("MapPoint");
-//    while (mappoint != NULL) {
-//        int mpid;
-//        mappoint->QueryAttribute("ID", &mpid);
-//        helper.GetMapPoint(mpid)->load(mappoint, helper);
-//        mappoint = mappoint->NextSiblingElement("MapPoint");
-//    }
-//    mappoints = map->FirstChildElement("TrashPoints");
-//    mappoint = mappoints->FirstChildElement("MapPoint");
-//    while (mappoint != NULL) {
-//        int mpid;
-//        mappoint->QueryAttribute("ID", &mpid);
-//        helper.GetMapPoint(mpid)->load(mappoint, helper);
-//        mappoint = mappoint->NextSiblingElement("MapPoint");
-//    }
-//
-//    //load other mapmaker stuff
-//    XMLElement* failures = map->FirstChildElement("FailureQueue");
-//    XMLElement* failure = failures->FirstChildElement("Failure");
-//    while (failure != NULL) {
-//        int kfid;
-//        int mpid;
-//        failure->QueryAttribute("KeyFrameID", &kfid);
-//        failure->QueryAttribute("MapPointID", &mpid);
-//        KeyFrame* kf = helper.GetKeyFrame(kfid);
-//        MapPoint* mp = helper.GetMapPoint(mpid);
-//        mvFailureQueue.push_back(std::pair<KeyFrame*, MapPoint*>(kf, mp));
-//        failure = failure->NextSiblingElement("Failure");
-//    }
-//
-//    XMLElement* newmappoints = map->FirstChildElement("NewMapPoints");
-//    XMLElement* newmp = newmappoints->FirstChildElement("NewMapPoint");
-//    while (newmp != NULL) {
-//        int mpid;
-//        newmp->QueryAttribute("MapPointID", &mpid);
-//        mqNewQueue.push(helper.GetMapPoint(mpid));
-//        newmp = newmp->NextSiblingElement("NewMapPoint");
-//    }
-//
-//    map->QueryAttribute("mdWiggleScale", &mdWiggleScale);
-//    map->QueryAttribute("mdWiggleScaleDepthNormalized", &mdWiggleScaleDepthNormalized);
-//    map->QueryAttribute("mdFirstKeyFrameDist", &mdFirstKeyFrameDist);
-//
-//    //TODO load camera and allow different cameras for each keyframe! At the moment loading the camera just in the mapmaker is useless!!!
-//    ATANCamera test((std::basic_string<char, char_traits<char>, allocator<char >> ()),
-//    (CVD::ImageRef()));
-//    test.load(map->FirstChildElement("Camera"), helper);
-//
-//    InitFromLoad();
-//
-//    mMap.UnlockMap();
-//    mbLockMap = waslocked;
+    bool waslocked = mbLockMap;
+    mbLockMap = true;
+    RequestContinue();
+    mMap.LockMap();
+    Reset();
 
+    MapSerializationHelper helper(filename);
+    helper.LoadXMLDocument();
+    XMLDocument* doc = helper.GetXMLDocument();
+
+    XMLElement* map = doc->FirstChildElement("Map");
+
+    //create empty object for each keyframe and mappoint and register pointer
+    XMLElement* keyframes = map->FirstChildElement("KeyFrames");
+    XMLElement* keyframe = keyframes->FirstChildElement("KeyFrame");
+    while (keyframe != NULL) {
+        KeyFrame* kf = new KeyFrame();
+        helper.RegisterKeyFrame(
+                kf); //TODO maybe register keyframes and mappoints with saved IDs (instead of assuming to be in same order as during save) to allow easy manual map editing?
+        mMap.vpKeyFrames.push_back(kf);
+        keyframe = keyframe->NextSiblingElement("KeyFrame");
+    }
+    keyframes = map->FirstChildElement("NewKeyFrames");
+    keyframe = keyframes->FirstChildElement("KeyFrame");
+    while (keyframe != NULL) {
+        KeyFrame* kf = new KeyFrame();
+        helper.RegisterKeyFrame(kf);
+        mvpKeyFrameQueue.push_back(kf);
+        keyframe = keyframe->NextSiblingElement("KeyFrame");
+    }
+    XMLElement* mappoints = map->FirstChildElement("Points");
+    XMLElement* mappoint = mappoints->FirstChildElement("MapPoint");
+    while (mappoint != NULL) {
+        MapPoint* mp = new MapPoint();
+        helper.RegisterMapPoint(mp);
+        mMap.vpPoints.push_back(mp);
+        mappoint = mappoint->NextSiblingElement("MapPoint");
+    }
+    mappoints = map->FirstChildElement("TrashPoints");
+    mappoint = mappoints->FirstChildElement("MapPoint");
+    while (mappoint != NULL) {
+        MapPoint* mp = new MapPoint();
+        helper.RegisterMapPoint(mp);
+        mMap.vpPointsTrash.push_back(mp);
+        mappoint = mappoint->NextSiblingElement("MapPoint");
+    }
+
+    //load actual data
+    keyframes = map->FirstChildElement("KeyFrames");
+    keyframe = keyframes->FirstChildElement("KeyFrame");
+    while (keyframe != NULL) {
+        int kfid;
+        keyframe->QueryAttribute("ID", &kfid);
+        helper.GetKeyFrame(kfid)->load(keyframe, helper);
+        keyframe = keyframe->NextSiblingElement("KeyFrame");
+    }
+    keyframes = map->FirstChildElement("NewKeyFrames");
+    keyframe = keyframes->FirstChildElement("KeyFrame");
+    while (keyframe != NULL) {
+        int kfid;
+        keyframe->QueryAttribute("ID", &kfid);
+        helper.GetKeyFrame(kfid)->load(keyframe, helper);
+        keyframe = keyframe->NextSiblingElement("KeyFrame");
+    }
+
+    mappoints = map->FirstChildElement("Points");
+    mappoint = mappoints->FirstChildElement("MapPoint");
+    while (mappoint != NULL) {
+        int mpid;
+        mappoint->QueryAttribute("ID", &mpid);
+        helper.GetMapPoint(mpid)->load(mappoint, helper);
+        mappoint = mappoint->NextSiblingElement("MapPoint");
+    }
+    mappoints = map->FirstChildElement("TrashPoints");
+    mappoint = mappoints->FirstChildElement("MapPoint");
+    while (mappoint != NULL) {
+        int mpid;
+        mappoint->QueryAttribute("ID", &mpid);
+        helper.GetMapPoint(mpid)->load(mappoint, helper);
+        mappoint = mappoint->NextSiblingElement("MapPoint");
+    }
+
+    //load other mapmaker stuff
+    XMLElement* failures = map->FirstChildElement("FailureQueue");
+    XMLElement* failure = failures->FirstChildElement("Failure");
+    while (failure != NULL) {
+        int kfid;
+        int mpid;
+        failure->QueryAttribute("KeyFrameID", &kfid);
+        failure->QueryAttribute("MapPointID", &mpid);
+        KeyFrame* kf = helper.GetKeyFrame(kfid);
+        MapPoint* mp = helper.GetMapPoint(mpid);
+        mvFailureQueue.push_back(std::pair<KeyFrame*, MapPoint*>(kf, mp));
+        failure = failure->NextSiblingElement("Failure");
+    }
+
+    XMLElement* newmappoints = map->FirstChildElement("NewMapPoints");
+    XMLElement* newmp = newmappoints->FirstChildElement("NewMapPoint");
+    while (newmp != NULL) {
+        int mpid;
+        newmp->QueryAttribute("MapPointID", &mpid);
+        mqNewQueue.push(helper.GetMapPoint(mpid));
+        newmp = newmp->NextSiblingElement("NewMapPoint");
+    }
+
+    map->QueryAttribute("mdWiggleScale", &mdWiggleScale);
+    map->QueryAttribute("mdWiggleScaleDepthNormalized", &mdWiggleScaleDepthNormalized);
+    map->QueryAttribute("mdFirstKeyFrameDist", &mdFirstKeyFrameDist);
+
+    //TODO load camera and allow different cameras for each keyframe! At the moment loading the camera just in the mapmaker is useless!!!
+    ATANCamera test("", (CVD::ImageRef()));
+    test.load(map->FirstChildElement("Camera"), helper);
+
+    InitFromLoad();
+
+    mMap.UnlockMap();
+    mbLockMap = waslocked;
 }
 
 }

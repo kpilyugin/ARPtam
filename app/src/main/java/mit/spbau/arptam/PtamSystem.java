@@ -32,6 +32,14 @@ public class PtamSystem {
     nReset(mHandle);
   }
 
+  public void saveMap(String fileName) {
+    nSaveMap(mHandle, fileName);
+  }
+
+  public void loadMap(String fileName) {
+    nLoadMap(mHandle, fileName);
+  }
+
   public Map getMap() {
     return mMap;
   }
@@ -60,6 +68,10 @@ public class PtamSystem {
   private static native void nNextTrackingState(long handle);
 
   private static native void nReset(long handle);
+
+  private static native void nSaveMap(long handle, String fileName);
+
+  private static native void nLoadMap(long handle, String fileName);
 
   private static native String nGetMessage(long handle);
 

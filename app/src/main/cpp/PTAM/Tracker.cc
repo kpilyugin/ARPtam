@@ -169,8 +169,8 @@ void Tracker::TrackFrame(CVD::Image<CVD::byte>& imFrame) {
                 mMessageForUser << " Map: " << mMap.vpPoints.size() << "P, " <<
                 mMap.vpKeyFrames.size() << "KF";
 
-                mMessageForUser << " rot: " << mse3CamFromWorld.get_rotation() <<
-                    ", pos" << mse3CamFromWorld.get_translation();
+//                mMessageForUser << " rot: " << mse3CamFromWorld.get_rotation() <<
+//                    ", pos" << mse3CamFromWorld.get_translation();
             }
 
             // Heuristics to check if a key-frame should be added to the map:
@@ -269,7 +269,6 @@ void Tracker::TrackForInitialMap() {
                 vMatches.push_back(pair<ImageRef, ImageRef>(i->irInitialPos, i->irCurrentPos));
             //vMatches.push_back(pair<ImageRef, ImageRef>(LevelZeroPos(i->irInitialPos,TRAIL_LEVEL), LevelZeroPos(i->irCurrentPos,TRAIL_LEVEL)));
 
-            mMapMaker.useSensorDataForInitialization = useSensorDataForInitialization;
             mMapMaker.InitFromStereo(mFirstKF, mCurrentKF, vMatches,
                                      mse3CamFromWorld);  // This will take some time!
             mnInitialStage = TRAIL_TRACKING_COMPLETE;

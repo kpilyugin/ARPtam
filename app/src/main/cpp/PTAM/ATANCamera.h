@@ -48,8 +48,7 @@
 #include <TooN/TooN.h>
 #include <cmath>
 #include <cvd/vector_image_ref.h>
-
-//#include "MapSerialization.h"
+#include "MapSerialization.h"
 
 namespace PTAM {
 
@@ -114,41 +113,41 @@ public:
 
     bool useOpenCVDistortion;
 
-//    XMLElement *save(MapSerializationHelper &helper) {
-//        XMLDocument *doc = helper.GetXMLDocument();
-//        XMLElement *camera = doc->NewElement("Camera");
-//
-//        camera->SetAttribute("useOpenCVDistortion", useOpenCVDistortion);
-//        camera->SetAttribute("mvCameraParams", helper.saveVector(mvCameraParams).c_str());
-//        camera->SetAttribute("opencv_camparams", helper.saveVector(opencv_camparams).c_str());
-//        camera->SetAttribute("mvImageSize", helper.saveVector(mvImageSize).c_str());
-//        camera->SetAttribute("msName", msName.c_str());
-//
-//        return camera;
-//    }
-//
-//    void load(const XMLElement *camera, MapSerializationHelper &helper) {
-//        camera->QueryAttribute("useOpenCVDistortion", &useOpenCVDistortion);
-//
-//        mvCameraParams = helper.loadVector<NUMTRACKERCAMPARAMETERS>(
-//                string(camera->FindAttribute("mvCameraParams")->Value()));
-//        opencv_camparams = helper.loadVector<9>(
-//                string(camera->FindAttribute("opencv_camparams")->Value()));
-//        mvImageSize = helper.loadVector<2>(string(camera->FindAttribute("mvImageSize")->Value()));
-//
-//        msName = string(camera->FindAttribute("msName")->Value());
-//
-//        if (useOpenCVDistortion) {
-//            mvCameraParams[0] = opencv_camparams[0] / mvImageSize[0];
-//            mvCameraParams[1] = opencv_camparams[1] / mvImageSize[1];
-//            mvCameraParams[2] = (opencv_camparams[2] + 0.5) / mvImageSize[0];
-//            mvCameraParams[3] = (opencv_camparams[3] + 0.5) / mvImageSize[1];
-//            mvCameraParams[4] = 0;
-//        }
-//
-//        RefreshParams();
-//
-//    }
+    XMLElement *save(MapSerializationHelper &helper) {
+        XMLDocument *doc = helper.GetXMLDocument();
+        XMLElement *camera = doc->NewElement("Camera");
+
+        camera->SetAttribute("useOpenCVDistortion", useOpenCVDistortion);
+        camera->SetAttribute("mvCameraParams", helper.saveVector(mvCameraParams).c_str());
+        camera->SetAttribute("opencv_camparams", helper.saveVector(opencv_camparams).c_str());
+        camera->SetAttribute("mvImageSize", helper.saveVector(mvImageSize).c_str());
+        camera->SetAttribute("msName", msName.c_str());
+
+        return camera;
+    }
+
+    void load(const XMLElement *camera, MapSerializationHelper &helper) {
+        camera->QueryAttribute("useOpenCVDistortion", &useOpenCVDistortion);
+
+        mvCameraParams = helper.loadVector<NUMTRACKERCAMPARAMETERS>(
+                string(camera->FindAttribute("mvCameraParams")->Value()));
+        opencv_camparams = helper.loadVector<9>(
+                string(camera->FindAttribute("opencv_camparams")->Value()));
+        mvImageSize = helper.loadVector<2>(string(camera->FindAttribute("mvImageSize")->Value()));
+
+        msName = string(camera->FindAttribute("msName")->Value());
+
+        if (useOpenCVDistortion) {
+            mvCameraParams[0] = opencv_camparams[0] / mvImageSize[0];
+            mvCameraParams[1] = opencv_camparams[1] / mvImageSize[1];
+            mvCameraParams[2] = (opencv_camparams[2] + 0.5) / mvImageSize[0];
+            mvCameraParams[3] = (opencv_camparams[3] + 0.5) / mvImageSize[1];
+            mvCameraParams[4] = 0;
+        }
+
+        RefreshParams();
+
+    }
 
 protected:
 //    GVars3::gvar3 <Vector<NUMTRACKERCAMPARAMETERS>> mgvvCameraParams; // The actual camera parameters

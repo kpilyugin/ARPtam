@@ -128,5 +128,19 @@ Java_mit_spbau_arptam_PtamSystem_nGetPosition(JNIEnv* env, jclass type, jlong ha
     env->ReleaseFloatArrayElements(jPosition, position, 0);
 }
 
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_PtamSystem_nSaveMap(JNIEnv* env, jclass type, jlong handle, jstring fileName) {
+    const char* name = env->GetStringUTFChars(fileName, false);
+    ptamSystem(handle)->mapMaker()->SaveMap(name);
+    env->ReleaseStringUTFChars(fileName, name);
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_PtamSystem_nLoadMap(JNIEnv* env, jclass type, jlong handle, jstring fileName) {
+    const char* name = env->GetStringUTFChars(fileName, false);
+    ptamSystem(handle)->mapMaker()->LoadMap(name);
+    env->ReleaseStringUTFChars(fileName, name);
+}
+
 }
 

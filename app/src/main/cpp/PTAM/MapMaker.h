@@ -20,6 +20,7 @@
 #include "Map.h"
 #include "KeyFrame.h"
 #include "MapPoint.h"
+#include "MapSerialization.h"
 #include "ATANCamera.h"
 #include <queue>
 #include <pthread.h>
@@ -37,71 +38,71 @@ struct MapMakerData {
     std::set<KeyFrame*> sNeverRetryKFs;    // Which keyframes have measurements failed enough so I should never retry?
     inline int GoodMeasCount() { return sMeasurementKFs.size(); }
 
-//    inline XMLElement* save(MapSerializationHelper &helper) {
-//        XMLDocument* doc = helper.GetXMLDocument();
-//        XMLElement* mmdata = doc->NewElement("MapMakerData");
-//
-//        XMLElement* mkfs = doc->NewElement("MeasurementKFs");
-//        mkfs->SetAttribute("size", sMeasurementKFs.size());
-//
-//        stringstream ss;
-//        //for(int i = 0; i < sMeasurementKFs.size(); i++)
-//        for (auto iter = sMeasurementKFs.begin(); iter != sMeasurementKFs.end(); ++iter) {
-//            ss << helper.GetKeyFrameID(*iter) << " ";
-//        }
-//        mkfs->SetText(ss.str().c_str());
-//
-//        mmdata->InsertEndChild(mkfs);
-//
-//        XMLElement* nrkfs = doc->NewElement("NeverRetryKFs");
-//        nrkfs->SetAttribute("size", sNeverRetryKFs.size());
-//
-//        stringstream ss2;
-//        //for(int i = 0; i < sNeverRetryKFs.size(); i++)
-//        for (auto iter = sNeverRetryKFs.begin(); iter != sNeverRetryKFs.end(); ++iter) {
-//            ss2 << helper.GetKeyFrameID(*iter) << " ";
-//        }
-//        nrkfs->SetText(ss2.str().c_str());
-//
-//        mmdata->InsertEndChild(nrkfs);
-//
-//        return mmdata;
-//    }
-//
-//    inline void load(const XMLElement* mmdata, MapSerializationHelper &helper) {
-//
-//
-//        const XMLElement* mkfs = mmdata->FirstChildElement("MeasurementKFs");
-//        int size;
-//        mkfs->QueryAttribute("size", &size);
-//
-//        if (size > 0) {
-//            stringstream ss(mkfs->GetText());
-//            for (int i = 0; i < size; i++)
-//                //for(auto iter=sMeasurementKFs.begin(); iter!=sMeasurementKFs.end(); ++iter)
-//            {
-//                int kfid;
-//                ss >> kfid;
-//                sMeasurementKFs.insert(helper.GetKeyFrame(kfid));
-//            }
-//        }
-//
-//        const XMLElement* nrkfs = mmdata->FirstChildElement("NeverRetryKFs");
-//        nrkfs->QueryAttribute("size", &size);
-//
-//        if (size > 0) {
-//            stringstream ss2(nrkfs->GetText());
-//            for (int i = 0; i < size; i++)
-//                //for(auto iter=sNeverRetryKFs.begin(); iter!=sNeverRetryKFs.end(); ++iter)
-//            {
-//                int kfid;
-//                ss2 >> kfid;
-//                sNeverRetryKFs.insert(helper.GetKeyFrame(kfid));
-//            }
-//        }
-//
-//
-//    }
+    inline XMLElement* save(MapSerializationHelper &helper) {
+        XMLDocument* doc = helper.GetXMLDocument();
+        XMLElement* mmdata = doc->NewElement("MapMakerData");
+
+        XMLElement* mkfs = doc->NewElement("MeasurementKFs");
+        mkfs->SetAttribute("size", sMeasurementKFs.size());
+
+        stringstream ss;
+        //for(int i = 0; i < sMeasurementKFs.size(); i++)
+        for (auto iter = sMeasurementKFs.begin(); iter != sMeasurementKFs.end(); ++iter) {
+            ss << helper.GetKeyFrameID(*iter) << " ";
+        }
+        mkfs->SetText(ss.str().c_str());
+
+        mmdata->InsertEndChild(mkfs);
+
+        XMLElement* nrkfs = doc->NewElement("NeverRetryKFs");
+        nrkfs->SetAttribute("size", sNeverRetryKFs.size());
+
+        stringstream ss2;
+        //for(int i = 0; i < sNeverRetryKFs.size(); i++)
+        for (auto iter = sNeverRetryKFs.begin(); iter != sNeverRetryKFs.end(); ++iter) {
+            ss2 << helper.GetKeyFrameID(*iter) << " ";
+        }
+        nrkfs->SetText(ss2.str().c_str());
+
+        mmdata->InsertEndChild(nrkfs);
+
+        return mmdata;
+    }
+
+    inline void load(const XMLElement* mmdata, MapSerializationHelper &helper) {
+
+
+        const XMLElement* mkfs = mmdata->FirstChildElement("MeasurementKFs");
+        int size;
+        mkfs->QueryAttribute("size", &size);
+
+        if (size > 0) {
+            stringstream ss(mkfs->GetText());
+            for (int i = 0; i < size; i++)
+                //for(auto iter=sMeasurementKFs.begin(); iter!=sMeasurementKFs.end(); ++iter)
+            {
+                int kfid;
+                ss >> kfid;
+                sMeasurementKFs.insert(helper.GetKeyFrame(kfid));
+            }
+        }
+
+        const XMLElement* nrkfs = mmdata->FirstChildElement("NeverRetryKFs");
+        nrkfs->QueryAttribute("size", &size);
+
+        if (size > 0) {
+            stringstream ss2(nrkfs->GetText());
+            for (int i = 0; i < size; i++)
+                //for(auto iter=sNeverRetryKFs.begin(); iter!=sNeverRetryKFs.end(); ++iter)
+            {
+                int kfid;
+                ss2 >> kfid;
+                sNeverRetryKFs.insert(helper.GetKeyFrame(kfid));
+            }
+        }
+
+
+    }
 };
 
 // MapMaker dervives from CVD::Thread, so everything in void run() is its own thread.
@@ -134,10 +135,6 @@ public:
 
     void SaveMap(string filename);
     void LoadMap(string filename);
-
-#ifdef __ANDROID__
-    bool useSensorDataForInitialization;
-#endif
 
 protected:
 
