@@ -99,7 +99,6 @@ public class ARActivity extends Activity {
       //noinspection ResultOfMethodCallIgnored
       folder.mkdirs();
     }
-    System.out.println("folder.getAbsolutePath() = " + folder.getAbsolutePath());
     saveMap.setText("Save map");
     saveMap.setOnClickListener(new View.OnClickListener() {
       @Override

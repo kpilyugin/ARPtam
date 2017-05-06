@@ -1,7 +1,6 @@
 #include "MapSerialization.h"
 #include <sys/stat.h>
 #include <cvd/image_io.h>
-#include <android/log.h>
 #include <unistd.h>
 #include <dirent.h>
 
@@ -57,8 +56,7 @@ int MapSerializationHelper::GetKeyFrameID(KeyFrame* kf) {
 
 KeyFrame* MapSerializationHelper::GetKeyFrame(int kfid) {
     if (kfid >= mKeyFrameBackwardMap.size() || kfid < 0)
-        __android_log_print(ANDROID_LOG_INFO, "Serialization", "KeyFrame out of range (%d/%d)",
-                            kfid, mKeyFrameBackwardMap.size());
+        cout << "Serialization: KeyFrame out of range " << kfid << ", " << mKeyFrameBackwardMap.size() << endl;
     return mKeyFrameBackwardMap[kfid];
 }
 
@@ -68,8 +66,7 @@ int MapSerializationHelper::GetMapPointID(MapPoint* mp) {
 
 MapPoint* MapSerializationHelper::GetMapPoint(int mpid) {
     if (mpid >= mMapPointBackwardMap.size() || mpid < 0)
-        __android_log_print(ANDROID_LOG_INFO, "Serialization", "MapPoint out of range (%d/%d)",
-                            mpid, mMapPointBackwardMap.size());
+        cout << "Serialization: MapPoint out of range " << mpid << ", " << mMapPointBackwardMap.size() << endl;
     return mMapPointBackwardMap[mpid];
 }
 
@@ -93,11 +90,10 @@ void MapSerializationHelper::SaveImage(CVD::Image<CVD::byte> im, int imageid) {
 
 void MapSerializationHelper::LoadImage(CVD::Image<CVD::byte> &im, int imageid) {
     stringstream kfname;
-    __android_log_print(ANDROID_LOG_INFO, "Serialization", "Loading Image (%d)", imageid);
+    cout << "Serialization: Loading Image " << imageid << endl;
     kfname << mapfolder << "/keyframes/image-" << imageid << ".png";
     img_load(im, kfname.str());
-    __android_log_print(ANDROID_LOG_INFO, "Serialization", "Image Size (%d,%d)", im.size().x,
-                        im.size().y);
+    cout << "Serialization: Image Size " << im.size().x << ", " << im.size().y << endl;
 }
 
 }
