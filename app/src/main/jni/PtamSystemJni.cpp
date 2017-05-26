@@ -70,7 +70,7 @@ Java_mit_spbau_arptam_PtamSystem_nRenderTrackingInfo(JNIEnv* env, jclass type, j
     TrackerRenderer* renderer = reinterpret_cast<TrackerRenderer*>(hRenderer);
     const ImageRef& imageSize = ptam->image()->size();
     Vector<2> scale;
-    scale[0] = 0.75f * 2.0f / static_cast<float>(imageSize.x);
+    scale[0] = 2.0f / static_cast<float>(imageSize.x);
     scale[1] = 2.0f / static_cast<float>(imageSize.y);
 
     Map* pMap = ptam->map();
@@ -142,5 +142,59 @@ Java_mit_spbau_arptam_PtamSystem_nLoadMap(JNIEnv* env, jclass type, jlong handle
     env->ReleaseStringUTFChars(fileName, name);
 }
 
+JNIEXPORT jint JNICALL
+Java_mit_spbau_arptam_Map_nGetNumPoints(JNIEnv *env, jclass type, jlong handle) {
+    return reinterpret_cast<Map*>(handle)->vpPoints.size();
+}
+
+JNIEXPORT jlong JNICALL
+Java_mit_spbau_arptam_Map_nGetMapPoint(JNIEnv *env, jclass type, jlong handle, jint i) {
+    MapPoint *point = reinterpret_cast<Map*>(handle)->vpPoints[i];
+    return reinterpret_cast<jlong>(point);
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_MapPoint_nGetImagePos(JNIEnv *env, jclass type, jlong handle,
+                                            jfloatArray imagePos_) {
+    jfloat *imagePos = env->GetFloatArrayElements(imagePos_, NULL);
+    MapPoint* mapPoint = reinterpret_cast<MapPoint*>(handle);
+    TrackerData* tData = mapPoint->pTData;
+    if (tData && mapPoint->bFoundRecent) {
+        imagePos[0] = (jfloat) tData->v2Image[0];
+        imagePos[1] = (jfloat) tData->v2Image[1];
+    }
+    env->ReleaseFloatArrayElements(imagePos_, imagePos, 0);
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_MapPoint_nGetWorldPos(JNIEnv *env, jclass type, jlong handle,
+                                            jfloatArray worldPos_) {
+    jfloat *worldPos = env->GetFloatArrayElements(worldPos_, NULL);
+    MapPoint* mapPoint = reinterpret_cast<MapPoint*>(handle);
+    worldPos[0] = (jfloat) mapPoint->v3WorldPos[0];
+    worldPos[1] = (jfloat) mapPoint->v3WorldPos[1];
+    worldPos[2] = (jfloat) mapPoint->v3WorldPos[2];
+    env->ReleaseFloatArrayElements(worldPos_, worldPos, 0);
+}
+
+JNIEXPORT void JNICALL
+Java_mit_spbau_arptam_MapPoint_nGetLocalPos(JNIEnv *env, jclass type, jlong handle,
+                                            jfloatArray localPos_) {
+    jfloat *localPos = env->GetFloatArrayElements(localPos_, NULL);
+    MapPoint* mapPoint = reinterpret_cast<MapPoint*>(handle);
+    TrackerData* tData = mapPoint->pTData;
+    if (tData && mapPoint->bFoundRecent) {
+        localPos[0] = (jfloat) tData->v3Cam[0];
+        localPos[1] = (jfloat) tData->v3Cam[1];
+        localPos[2] = (jfloat) tData->v3Cam[2];
+    }
+    env->ReleaseFloatArrayElements(localPos_, localPos, 0);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_mit_spbau_arptam_MapPoint_nIsTracked(JNIEnv *env, jclass type, jlong handle) {
+    MapPoint* mapPoint = reinterpret_cast<MapPoint*>(handle);
+    return (jboolean) mapPoint->bFoundRecent;
+}
 }
 

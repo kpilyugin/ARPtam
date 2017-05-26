@@ -13,10 +13,10 @@ public class ScreenMesh {
 
   private final int[] vBuffer = new int[1];
 
-  public ScreenMesh(float ratio) {
+  public ScreenMesh() {
     glGenBuffers(1, vBuffer, 0);
     glBindBuffer(GL_ARRAY_BUFFER, vBuffer[0]);
-    float[] vertices = getVertices(ratio);
+    float[] vertices = getVertices();
     glBufferData(GL_ARRAY_BUFFER, vertices.length * 4, FloatBuffer.wrap(vertices), GL_STATIC_DRAW);
   }
 
@@ -40,11 +40,11 @@ public class ScreenMesh {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
-  private static float[] getVertices(float screenRatio) {
+  private static float[] getVertices() {
     return new float[] {
-        2 * screenRatio - 1, -1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f, 1.0f,
         -1.0f, -1.0f, 0.0f, 1.0f,
-        2 * screenRatio - 1, 1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 0.0f,
         -1.0f, 1.0f, 0.0f, 0.0f
     };
   }
