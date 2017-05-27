@@ -69,28 +69,13 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
   public void setRenderModel(boolean renderModel) {
     this.renderModel = renderModel;
     if (renderModel) {
-      Map map = mPtam.getMap();
-      int numPoints = map.getNumPoints();
-      MapPoint closestPoint = null;
-      float minRadius = 1000;
-      for (int i = 0; i < numPoints; i++) {
-        MapPoint point = map.getPoint(i);
-        if (point.isTracked()) {
-          float radius = point.getLocalPos().xy0().norm();
-          if (radius < minRadius) {
-            minRadius = radius;
-            closestPoint = point;
-          }
-        }
-      }
-      if (closestPoint != null) {
-        modelWorldTm.m0.setNegate(ptamTm.m0);
-        modelWorldTm.m1.setNegate(ptamTm.m2);
-        modelWorldTm.m2.setNegate(ptamTm.m1);
-        modelWorldTm.pos.copyFrom(closestPoint.getWorldPos());
-        float dist = Vec3f.distance(modelWorldTm.pos, ptamTm.pos);
-        modelWorldTm.scale(0.2 * dist);
-      }
+      Vec3f localPos = new Vec3f(0, 0.15, 1);
+      Vec3f worldPos = M3x3.mul3x3(Vec3f.sub(localPos, ptamTm.pos), ptamTm, new Vec3f());
+      modelWorldTm.m0.setNegate(ptamTm.m0);
+      modelWorldTm.m1.setNegate(ptamTm.m2);
+      modelWorldTm.m2.setNegate(ptamTm.m1);
+      modelWorldTm.pos.copyFrom(worldPos);
+      modelWorldTm.scale(0.3 * localPos.norm());
     }
   }
 
@@ -124,8 +109,6 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
     graphics.resetState();
     graphics.clear(Color.GRAY, 1);
     graphics.setCullFaceEnable(false);
-    int width = graphics.getRenderTargetWidth() * ARActivity.PREVIEW_SIZE.getWidth() / ARActivity.PREVIEW_SIZE.getHeight();
-    graphics.setViewport(0, 0, width, graphics.getRenderTargetHeight());
     graphics.setZWritable(false);
     graphics.setZFunction(IGraphics.Z_ALWAYS);
 
@@ -156,15 +139,9 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
         if (point.isTracked()) {
           Vec3f pos = point.getWorldPos();
           Vec3f local = M3x3.mul3x3(ptamTm, pos, new Vec3f()).add(ptamTm.pos);
-          Vec2f imagePos = point.getLastImagePos();
-          int x = (int) (imagePos.x * graphics.getRenderTargetWidth() / ARActivity.PREVIEW_SIZE.getWidth());
-          int y = (int) (imagePos.y * graphics.getRenderTargetHeight() / ARActivity.PREVIEW_SIZE.getHeight());
-          Vec4f color = point.getColor();
-          graphics.renderSphere(color.toVec3f(), local.x, local.y, local.z, 0.005f * local.norm());
-          graphics.render2d(color, x, y, new Vec2i(10, 10));
+          graphics.renderSphere(Color.BLUE, local.x, local.y, local.z, 0.005f * local.norm());
         }
       }
-//      System.out.println("goodPoints = " + goodPoints);
     }
   }
 
@@ -178,6 +155,7 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
   }
 
   public void onSurfaceChanged(GL10 unused, int width, int height) {
+    width = width * ARActivity.PREVIEW_SIZE.getHeight() / ARActivity.PREVIEW_SIZE.getWidth();
     graphics.setDefaultRtSize(width, height);
   }
 
@@ -217,7 +195,7 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
   }
 
   private static ObjectRenderer createRenderer(final ObjectRoot.GeomLink[] list,
-                                       final ObjectRoot.GeomLink[] listVC) {
+                                               final ObjectRoot.GeomLink[] listVC) {
     final PhongParameters params = new PhongParameters();
     return new ObjectRenderer() {
       @Override
