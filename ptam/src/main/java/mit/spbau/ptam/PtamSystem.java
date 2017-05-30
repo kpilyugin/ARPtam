@@ -61,6 +61,10 @@ public class PtamSystem {
     return mPosition;
   }
 
+  public void onPause() {
+    mRenderer = 0;
+  }
+
   private static native long nCreate(int width, int height);
 
   private static native void nProcessFrame(long handle, int width, int height, byte[] data);

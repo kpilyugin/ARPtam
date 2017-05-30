@@ -55,13 +55,13 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
   public void onResume() {
     mUpdateST = true;
-    if (mCamera != null) {
-      mCamera.onResume();
-    }
+    mView.onResume();
   }
 
   public void onPause() {
     mUpdateST = false;
+    mView.onPause();
+    mPtam.onPause();
     if (mCamera != null) {
       mCamera.onPause();
     }
@@ -84,18 +84,22 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
     textureId = initTexture();
     mSTexture = new SurfaceTexture(textureId);
     try {
-      mCamera = new CameraManager(mSTexture) {
-        @Override
-        protected void processFrame(final byte[] data) {
-          mView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-              mPtam.processFrame(data);
-            }
-          });
-          mView.requestRender();
-        }
-      };
+      if (mCamera == null) {
+        mCamera = new CameraManager(mSTexture) {
+          @Override
+          protected void processFrame(final byte[] data) {
+            mView.queueEvent(new Runnable() {
+              @Override
+              public void run() {
+                mPtam.processFrame(data);
+              }
+            });
+            mView.requestRender();
+          }
+        };
+      } else {
+        mCamera.resume(mSTexture);
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -174,12 +178,7 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
   public void onFrameAvailable(SurfaceTexture st) {
     mView.requestRender();
-    mView.queueEvent(new Runnable() {
-      @Override
-      public void run() {
-        mUpdateST = true;
-      }
-    });
+    mUpdateST = true;
   }
 
   public void onDestroy() {

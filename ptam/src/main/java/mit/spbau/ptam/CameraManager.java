@@ -13,15 +13,8 @@ public class CameraManager implements Camera.PreviewCallback {
   private Camera mCamera;
   private byte[][] mPreviewBuffers;
 
-  private List<String> wbmodes;
-  private Camera.Size frameSize;
-
   public CameraManager(SurfaceTexture surfaceTexture) throws IOException {
     startCamera(surfaceTexture);
-  }
-
-  public void onResume() {
-    mCamera.stopPreview();
   }
 
   public void onPause() {
@@ -69,8 +62,6 @@ public class CameraManager implements Camera.PreviewCallback {
     Log.i("Camera", "Best FPS range: " + fpsRange[0] + "-" + fpsRange[1]);
     Log.i("Camera", "Size: " + pwidth + "x" + pheight);
 
-    wbmodes = camparams.getSupportedWhiteBalance();
-
     camparams.setPreviewSize(pwidth, pheight);
     camparams.setPreviewFpsRange(fpsRange[0], fpsRange[1]);
     camparams.setPreviewFormat(imageFormat);
@@ -99,11 +90,14 @@ public class CameraManager implements Camera.PreviewCallback {
     Camera.Size previewFrameSize = mCamera.getParameters().getPreviewSize();
     Log.i("actual size: ", "" + previewFrameSize.width + "x" + previewFrameSize.height);
 
-    frameSize = previewFrameSize;
     int bPP = ImageFormat.getBitsPerPixel(imageFormat);
     int bufferSize = (int) (previewFrameSize.height * previewFrameSize.width * ((double) bPP / 8.0) * 1.5);
 
     mPreviewBuffers = new byte[2][bufferSize];
+    resume(surfaceTexture);
+  }
+
+  public void resume(SurfaceTexture surfaceTexture) throws IOException {
     mCamera.addCallbackBuffer(mPreviewBuffers[0]);
     mCamera.setPreviewCallbackWithBuffer(this);
     mCamera.setPreviewTexture(surfaceTexture);
