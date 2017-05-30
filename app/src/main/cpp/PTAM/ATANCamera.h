@@ -100,16 +100,6 @@ public:
     inline Vector<2> ImplaneTL();
     inline Vector<2> ImplaneBR();
 
-    // OpenGL helper function
-    Matrix<4> MakeUFBLinearFrustumMatrix(double near, double far);
-
-    // Feedback for Camera Calibrator
-    double PixelAspectRatio() { return mvFocal[1] / mvFocal[0]; }
-
-
-    // Useful for gvar-related reasons (in case some external func tries to read the camera params gvar, and needs some defaults.)
-    static const Vector<NUMTRACKERCAMPARAMETERS> mvDefaultParams;
-
     bool useOpenCVDistortion;
 
     XMLElement *save(MapSerializationHelper &helper) {

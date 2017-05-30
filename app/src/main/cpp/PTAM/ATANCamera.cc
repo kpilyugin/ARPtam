@@ -12,17 +12,10 @@ using namespace CVD;
 ATANCamera::ATANCamera(std::string sName, CVD::ImageRef imageSize) {
     // The camera name is used to find the camera's parameters in a GVar.
     msName = sName;
-//    GV2.Register(mgvvCameraParams, sName + ".Parameters", mvDefaultParams,
-//                 HIDDEN | FATAL_IF_NOT_DEFINED);
-//    mvCameraParams = *mgvvCameraParams;
     mvImageSize[0] = imageSize.x;
     mvImageSize[1] = imageSize.y;
-    useOpenCVDistortion = true; //GV2.GetInt(sName + ".UseOpenCVDistortion", false);
+    useOpenCVDistortion = true; //".UseOpenCVDistortion"
     if (useOpenCVDistortion) {
-//        opencv_camparams = GV3::get<Vector<9>>(sName + ".OpenCVParameters", opencv_camparams,
-//                                               HIDDEN | FATAL_IF_NOT_DEFINED);
-
-        // TODO automatically collect params
         opencv_camparams[0] = 5.4241592607057521e+02;
         opencv_camparams[1] = 5.4123054214465174e+02;
         opencv_camparams[2] = 3.1927906460010774e+02;
@@ -175,24 +168,6 @@ Vector<2> ATANCamera::Project(const Vector<2> &vCam) {
         mdLastR = sqrt(vCam * vCam);
         mbInvalid = (mdLastR > mdMaxR);
 
-        /*double x = mvLastCam[0];//(x - cx)*ifx;
-        double y = mvLastCam[1];//(y - cy)*ify;
-
-        int iters = 5;
-        // compensate distortion iteratively
-        for(int j = 0; j < iters; j++ )
-        {
-                double r2 = x*x + y*y;
-                double icdist = 1./(1 + ((opencv_camparams[8]*r2 + opencv_camparams[5])*r2 + opencv_camparams[4])*r2);
-                double deltaX = 2*opencv_camparams[6]*x*y + opencv_camparams[7]*(r2 + 2*x*x);
-                double deltaY = opencv_camparams[6]*(r2 + 2*y*y) + 2*opencv_camparams[7]*x*y;
-                x = (mvLastCam[0] - deltaX)*icdist;
-                y = (mvLastCam[1] - deltaY)*icdist;
-        }
-
-        mvLastDistCam[0] = x;
-        mvLastDistCam[1] = y;//*/
-
         DefaultPrecision r2 = mvLastCam * mvLastCam;
         DefaultPrecision r4 = r2 * r2;
         DefaultPrecision r6 = r4 * r2;
@@ -205,9 +180,6 @@ Vector<2> ATANCamera::Project(const Vector<2> &vCam) {
         mvLastDistCam[1] = mdLastFactor * mvLastCam[1] +
                            opencv_camparams[6] * (r2 + 2 * mvLastCam[1] * mvLastCam[1]) +
                            2 * opencv_camparams[7] * mvLastCam[0] * mvLastCam[1];//*/
-
-        //ox=mvLastIm[0] = opencv_camparams[2] + opencv_camparams[0] * mvLastDistCam[0];
-        //oy=mvLastIm[1] = opencv_camparams[3] + opencv_camparams[1] * mvLastDistCam[1];*/
 
         mvLastIm[0] = mvCenter[0] + mvFocal[0] * mvLastDistCam[0];
         mvLastIm[1] = mvCenter[1] + mvFocal[1] * mvLastDistCam[1];
@@ -225,11 +197,6 @@ Vector<2> ATANCamera::Project(const Vector<2> &vCam) {
 
         mvLastIm[0] = mvCenter[0] + mvFocal[0] * mvLastDistCam[0];
         mvLastIm[1] = mvCenter[1] + mvFocal[1] * mvLastDistCam[1];
-
-#ifdef __ANDROID__
-        //__android_log_print(ANDROID_LOG_INFO, "Project", "normal %f %f opencv %f %f",mvLastIm[0],mvLastIm[1],ox,oy);
-#endif
-
         return mvLastIm;
     }
 }
@@ -262,15 +229,6 @@ Vector<2> ATANCamera::UnProject(const Vector<2> &v2Im) {
             x = (mvLastDistCam[0] - deltaX) * icdist;
             y = (mvLastDistCam[1] - deltaY) * icdist;
         }
-
-        /*DefaultPrecision r2 = mvLastDistCam * mvLastDistCam;
-        DefaultPrecision r4 = r2*r2;
-        DefaultPrecision r6 = r4*r2;
-        mdLastFactor = 1+opencv_distparams[0]*r2+opencv_distparams[1]*r4+opencv_distparams[4]*r6;
-
-        ox2 = mdLastFactor * mvLastDistCam[0] + 2*opencv_distparams[2]*mvLastDistCam[0]*mvLastDistCam[1] + opencv_distparams[3]*(r2 + 2*mvLastDistCam[0]*mvLastDistCam[0]);
-        oy2 = mdLastFactor * mvLastDistCam[1] + opencv_distparams[2]*(r2 + 2*mvLastDistCam[1]*mvLastDistCam[1]) + 2*opencv_distparams[3]*mvLastDistCam[0]*mvLastDistCam[1];*/
-
 
         ox = mvLastCam[0] = x;
         oy = mvLastCam[1] = y;
@@ -466,16 +424,6 @@ Vector<2> ATANCamera::UFBUnProject(const Vector<2> &v2Im) {
 
         mvLastCam[0] = x;
         mvLastCam[1] = y;
-
-
-        /*DefaultPrecision r2 = mvLastDistCam * mvLastDistCam;
-        DefaultPrecision r4 = r2*r2;
-        DefaultPrecision r6 = r4*r2;
-        mdLastFactor = 1+opencv_distparams[0]*r2+opencv_distparams[1]*r4+opencv_distparams[4]*r6;
-
-        mvLastCam[0] = mdLastFactor * mvLastDistCam[0] + 2*opencv_distparams[2]*mvLastDistCam[0]*mvLastDistCam[1] + opencv_distparams[3]*(r2 + 2*mvLastDistCam[0]*mvLastDistCam[0]);
-        mvLastCam[1] = mdLastFactor * mvLastDistCam[1] + opencv_distparams[2]*(r2 + 2*mvLastDistCam[1]*mvLastDistCam[1]) + 2*opencv_distparams[3]*mvLastDistCam[0]*mvLastDistCam[1];*/
-
 
         return mvLastCam;
     }
