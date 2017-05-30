@@ -83,7 +83,6 @@ endif
 
 $(call import-add-path,$(LOCAL_PATH)/ndk-modules)
 $(call import-module,cvd)
-$(call import-module,gvars3)
 $(call import-module,TooN)
 $(call import-module,agast)
 $(call import-module,glm)

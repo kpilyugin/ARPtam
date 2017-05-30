@@ -1,7 +1,5 @@
 // -*- c++ -*- 
 // Copyright 2008 Isis Innovation Limited
-// Modified by  2015
-//
 // SmallBlurryImage-based relocaliser
 // 
 // Each KF stores a small, blurred version of itself;

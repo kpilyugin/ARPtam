@@ -20,7 +20,6 @@ namespace PTAM {
 
 using namespace CVD;
 using namespace std;
-//using namespace GVars3;
 
 // The constructor mostly sets up interal reference variables
 // to the other classes..
@@ -34,9 +33,6 @@ Tracker::Tracker(CVD::ImageRef irVideoSize, const ATANCamera& camera, Map& m, Ma
     numGoodFrames = 0;
 
     mCurrentKF.bFixed = false;
-//    GUI.RegisterCommand("Reset", GUICommandCallBack, this);
-//    GUI.RegisterCommand("KeyPress", GUICommandCallBack, this);
-//    GUI.RegisterCommand("PokeTracker", GUICommandCallBack, this);
     TrackerData::irImageSize = mirSize;
 
     mpSBILastFrame = NULL;
@@ -103,18 +99,11 @@ void Tracker::TrackFrame(CVD::Image<CVD::byte>& imFrame) {
     mCurrentKF.mMeasurements.clear();
     mCurrentKF.MakeKeyFrame_Lite(imFrame);
     TIMER_STOP("make keyframe")
-    /*for(int i = 0; i < 10; i++)
-    {
-        TIMER_START
-        mCurrentKF.MakeKeyFrame_Lite(imFrame);
-        TIMER_STOP("make keyframe2")
-    }*/
     TIMER_START
 
     // Update the small images for the rotation estimator
     double gvdSBIBlur = 0.75; // Tracker.RotationEstimatorBlur
-    int gvnUseSBI = 1; // Tracker.UseRotationEstimator
-    mbUseSBIInit = gvnUseSBI;
+    mbUseSBIInit = true; // Tracker.UseRotationEstimator
     if (!mpSBIThisFrame) {
         mpSBIThisFrame = new SmallBlurryImage(mCurrentKF, gvdSBIBlur);
         mpSBILastFrame = new SmallBlurryImage(mCurrentKF, gvdSBIBlur);
@@ -165,12 +154,8 @@ void Tracker::TrackFrame(CVD::Image<CVD::byte>& imFrame) {
 
                 for (int i = 0; i < LEVELS; i++)
                     mMessageForUser << " " << manMeasFound[i] << "/" << manMeasAttempted[i];
-                //	    mMessageForUser << " Found " << mnMeasFound << " of " << mnMeasAttempted <<". (";
-                mMessageForUser << " Map: " << mMap.vpPoints.size() << "P, " <<
-                mMap.vpKeyFrames.size() << "KF";
-
-//                mMessageForUser << " rot: " << mse3CamFromWorld.get_rotation() <<
-//                    ", pos" << mse3CamFromWorld.get_translation();
+                    mMessageForUser << " Map: " << mMap.vpPoints.size() << "P, " <<
+                        mMap.vpKeyFrames.size() << "KF";
             }
 
             // Heuristics to check if a key-frame should be added to the map:
@@ -230,8 +215,6 @@ bool Tracker::AttemptRecovery() {
 
 void Tracker::TrackForInitialMap() {
     // MiniPatch tracking threshhold.
-//    static gvar3<int> gvnMaxSSD("Tracker.MiniPatchMaxSSD", 100000, SILENT);
-
     MiniPatch::mnMaxSSD = 100000;
 
     //BADLIGHTHACKS
@@ -267,7 +250,6 @@ void Tracker::TrackForInitialMap() {
             //vector<pair<Vector<2>, Vector<2>> > vMatches;   // This is the format the mapmaker wants for the stereo pairs
             for (list<Trail>::iterator i = mlTrails.begin(); i != mlTrails.end(); i++)
                 vMatches.push_back(pair<ImageRef, ImageRef>(i->irInitialPos, i->irCurrentPos));
-            //vMatches.push_back(pair<ImageRef, ImageRef>(LevelZeroPos(i->irInitialPos,TRAIL_LEVEL), LevelZeroPos(i->irCurrentPos,TRAIL_LEVEL)));
 
             mMapMaker.InitFromStereo(mFirstKF, mCurrentKF, vMatches,
                                      mse3CamFromWorld);  // This will take some time!
@@ -284,7 +266,7 @@ void Tracker::TrailTracking_Start() {
     mCurrentKF.MakeKeyFrame_Rest();  // This populates the Candidates list, which is Shi-Tomasi thresholded.
     mFirstKF = mCurrentKF;
 
-    const int traillevel = 0; //GV2.GetInt("Tracker.TrailLevel", 0, SILENT);
+    const int traillevel = 0; //"Tracker.TrailLevel"
 
     vector<pair<double, ImageRef> > vCornersAndSTScores;
     for (unsigned int i = 0; i <
@@ -318,7 +300,7 @@ void Tracker::TrailTracking_Start() {
 //Steady-state trail tracking: Advance from the previous frame, remove duds.
 int Tracker::TrailTracking_Advance() {
     int nGoodTrails = 0;
-    const int traillevel = 0; //GV2.GetInt("Tracker.TrailLevel", 0, SILENT);
+    const int traillevel = 0; //"Tracker.TrailLevel"
 
     MiniPatch BackwardsPatch;
     Level& lCurrentFrame = mCurrentKF.aLevels[traillevel];
@@ -962,50 +944,6 @@ void Tracker::ApplyMotionModel() {
         v6Velocity[1] = 0.0;
     }
     mse3CamFromWorld = SE3<>::exp(v6Velocity) * mse3StartPos;
-
-//#ifdef __ANDROID__
-//    if (useSensorDataForTracking) {
-//        //use rotation from sensors
-//        lastrot = currot;
-//        Matrix<3, 3> rotmat;
-//        getRotation(rotmat.get_data_ptr());
-//        currot = SO3<>(rotmat.T());
-//        /*Vector<3> lv = currot.ln();
-//        Vector<3> lv2;
-//        lv2[0] = -lv[1];
-//        lv2[1] = -lv[0];
-//        lv2[2] = -lv[2];
-//        currot = SO3<>(lv2);*/
-//
-//        SO3<> diffr = currot * lastrot.inverse();
-//        Vector<3> lv = diffr.ln();
-//        Vector<3> lv2;
-//        if (sensorMode == 1) {
-//            //BT200
-//            lv2[0] = lv[0];
-//            lv2[1] = -lv[1];
-//            lv2[2] = -lv[2];
-//        }
-//        else {
-//            //Z2
-//            lv2[0] = -lv[1];
-//            lv2[1] = -lv[0];
-//            lv2[2] = -lv[2];
-//        }
-//        diffr = SO3<>(lv2);
-//
-//        mse3CamFromWorld.get_translation() = (SE3<>::exp(v6Velocity) *
-//                                              mse3StartPos).inverse().get_translation();
-//        //mse3CamFromWorld.get_rotation() = (currot * lastrot.inverse() * mse3StartPos.get_rotation()).inverse();
-//        mse3CamFromWorld.get_rotation() = (diffr * mse3StartPos.get_rotation()).inverse();
-//        //mse3CamFromWorld.get_rotation() = ( currot * firstrot * firstglobal).inverse();
-//        mse3CamFromWorld = mse3CamFromWorld.inverse();
-//        SO3<> tmp = currot * lastrot.inverse();
-//        //__android_log_print(ANDROID_LOG_INFO, "rot-diff", "sensor data used");
-//        //__android_log_print(ANDROID_LOG_INFO, "rot-diff", "%f %f %f",tmp.ln()[0],tmp.ln()[1],tmp.ln()[2]);
-//        //__android_log_print(ANDROID_LOG_INFO, "rot-sensor", "%f %f %f     %f %f %f",mse3CamFromWorld.ln()[0],mse3CamFromWorld.ln()[1],mse3CamFromWorld.ln()[2],mse3CamFromWorld.ln()[3],mse3CamFromWorld.ln()[4],mse3CamFromWorld.ln()[5]);
-//    }
-//    else {
 }
 
 // The motion model is entirely the tracker's, and is kept as a decaying

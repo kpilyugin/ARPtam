@@ -62,7 +62,6 @@ int Bundle::AddCamera(SE3<> se3CamFromWorld, bool bFixed) {
     return n;
 }
 
-//some test to speedup things TODO check if still necessary
 void Bundle::AllocatePoints(int numPts) {
     mvPoints.resize(numPts, Point());
 }

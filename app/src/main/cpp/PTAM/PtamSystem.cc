@@ -17,8 +17,6 @@ using namespace CVD;
 using namespace std;
 
 PtamSystem::PtamSystem(const ImageRef& size) {
-    requestFinish = false;
-
     mimFrameBW.resize(size);
 
     mCamera = new ATANCamera("Camera", size);
@@ -30,19 +28,12 @@ PtamSystem::PtamSystem(const ImageRef& size) {
 
 void PtamSystem::processFrame(CVD::Image<CVD::byte> image) {
     TIMER_INIT
-    if (!requestFinish) {
-        // Grab new video frame...
-        TIMER_START
-        mimFrameBW = image;
-        TIMER_STOP("Get Frame")
-    }
+    mimFrameBW = image;
 
-    if (!requestFinish) {
-        mMapMaker->mbLockMap = 0;
-        TIMER_START
-        mTracker->TrackFrame(mimFrameBW);
-        TIMER_STOP("Tracker")
-    }
+    mMapMaker->mbLockMap = 0;
+    TIMER_START
+    mTracker->TrackFrame(mimFrameBW);
+    TIMER_STOP("Tracker")
 }
 
 Map* PtamSystem::map() {

@@ -69,13 +69,25 @@ public class ARRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
   public void setRenderModel(boolean renderModel) {
     this.renderModel = renderModel;
     if (renderModel) {
-      Vec3f localPos = new Vec3f(0, 0.15, 1);
-      Vec3f worldPos = M3x3.mul3x3(Vec3f.sub(localPos, ptamTm.pos), ptamTm, new Vec3f());
-      modelWorldTm.m0.setNegate(ptamTm.m0);
-      modelWorldTm.m1.setNegate(ptamTm.m2);
-      modelWorldTm.m2.setNegate(ptamTm.m1);
-      modelWorldTm.pos.copyFrom(worldPos);
-      modelWorldTm.scale(0.3 * localPos.norm());
+      Vec3f average = new Vec3f();
+      Map map = mPtam.getMap();
+      int goodPoints = 0;
+      for (int i = 0; i < map.getNumPoints(); i++) {
+        MapPoint point = map.getPoint(i);
+        if (point.isTracked()) {
+          average.add(point.getWorldPos());
+          goodPoints++;
+        }
+      }
+      if (goodPoints > 0) {
+        Vec3f worldPos = new Vec3f(0, 0, 0);
+//        Vec3f worldPos = Vec3f.mul(average, 1. / goodPoints);
+        modelWorldTm.m0.setNegate(ptamTm.m0);
+        modelWorldTm.m1.setNegate(ptamTm.m2);
+        modelWorldTm.m2.setNegate(ptamTm.m1);
+        modelWorldTm.pos.copyFrom(worldPos);
+        modelWorldTm.scale(0.2 * Vec3f.distance(worldPos, ptamTm.pos));
+      }
     }
   }
 

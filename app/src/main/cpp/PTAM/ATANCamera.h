@@ -1,6 +1,5 @@
 // *-* c++ *-*
 // Copyright 2008 Isis Innovation Limited
-// Modified by  2015
 
 // N-th implementation of a camera model
 // GK 2007

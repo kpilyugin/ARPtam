@@ -1,5 +1,4 @@
 //original from: https://github.com/bilash/threadpool
-//modified by  2015
 
 #ifndef _H_THREADPOOL
 #define _H_THREADPOOL
@@ -24,7 +23,7 @@ public:
     }
     ~Mutex() {
         if (is_locked) {
-            unlock(); // FIXME: is this correct? Can a thread unlock a mutex locked by another thread?
+            unlock();
         }
         pthread_mutex_destroy(&m_lock);
     }

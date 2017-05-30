@@ -1,6 +1,5 @@
 // -*- c++ -*- 
 // Copyright 2008 Isis Innovation Limited
-// Modified by  2015
 
 // HomographyInit.h 
 // Declares the HomographyInit class and a few helper functions. 

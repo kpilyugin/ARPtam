@@ -1,7 +1,5 @@
 // -*- c++ -*-
 // Copyright 2008 Isis Innovation Limited
-// Modified by  2015
-//
 // System.h
 //
 // Defines the System class

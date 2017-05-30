@@ -1,4 +1,3 @@
-//Copyright  2015
 #ifndef __TIMING__
 #define __TIMING__
 
