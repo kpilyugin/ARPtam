@@ -942,10 +942,7 @@ bool MapMaker::NeedNewKeyFrame(KeyFrame& kCurrent) {
     double dDist = KeyFrameLinearDist(kCurrent, *pClosest);
     //dDist *= (1.0 / kCurrent.dSceneDepthMean);
 
-    //__android_log_print(ANDROID_LOG_INFO, "kftest", "%f/%f %f", dDist,GV2.GetDouble("MapMaker.MaxKFDistWiggleMult",1.0,SILENT),mdWiggleScale );
-
     double maxKFDistWiggleMult = 0.2;
-    //        GV2.GetDouble("MapMaker.MaxKFDistWiggleMult", 0.2, SILENT))// * mdWiggleScaleDepthNormalized)
     if (maxKFDistWiggleMult > 0.2) {
         return true;
     }

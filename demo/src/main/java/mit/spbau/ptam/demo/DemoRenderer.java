@@ -1,4 +1,4 @@
-package mit.spbau.arptam;
+package mit.spbau.ptam.demo;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
@@ -19,9 +19,9 @@ import delightex.scene.ObjectRenderer;
 import delightex.scene.ObjectRoot;
 import delightex.scene.camera.CameraMatrix;
 import jetbrains.jetpad.base.function.Consumer;
-import mit.spbau.arptam.graphics.ScreenMesh;
-import mit.spbau.arptam.graphics.Shader;
-import mit.spbau.arptam.graphics.ShaderTexture;
+import mit.spbau.ptam.demo.graphics.ScreenMesh;
+import mit.spbau.ptam.demo.graphics.Shader;
+import mit.spbau.ptam.demo.graphics.ShaderTexture;
 import mit.spbau.ptam.*;
 
 import static android.opengl.GLES20.*;

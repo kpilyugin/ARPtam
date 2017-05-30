@@ -1,4 +1,4 @@
-package mit.spbau.arptam.graphics;
+package mit.spbau.ptam.demo.graphics;
 
 import android.util.Log;
 

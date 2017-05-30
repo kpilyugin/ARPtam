@@ -1,4 +1,4 @@
-package mit.spbau.arptam;
+package mit.spbau.ptam.demo;
 
 import android.Manifest;
 import android.app.Activity;
