@@ -76,6 +76,9 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
       modelWorldTm.m2.setNegate(ptamTm.m1);
       modelWorldTm.pos.copyFrom(worldPos);
       modelWorldTm.scale(0.2 * Vec3f.distance(worldPos, ptamTm.pos));
+      if (object == null) {
+        loadModel();
+      }
     }
   }
 
@@ -106,7 +109,6 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
     mSTexture.setOnFrameAvailableListener(this);
     mesh = new ScreenMesh();
     shader = new ShaderTexture();
-    loadModel();
   }
 
   public void onDrawFrame(GL10 unused) {
@@ -127,7 +129,7 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
     graphics.setZFunction(IGraphics.Z_LESS);
     updateCameraPtam(ptamTm);
     graphics.setCamera(cameraMatrix.tm, cameraMatrix.getParameters());
-    if (renderModel) {
+    if (renderModel && modelRenderer != null) {
       Transform.mulInverse(modelWorldTm, ptamTm, object.rootNode.nodeTm);
       M3x3.mul3x3(ptamTm, modelWorldTm.pos, object.rootNode.nodeTm.pos).add(ptamTm.pos);
       object.rootNode.evaluateWorldTm();
@@ -178,7 +180,12 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
   public void onFrameAvailable(SurfaceTexture st) {
     mView.requestRender();
-    mUpdateST = true;
+    mView.queueEvent(new Runnable() {
+      @Override
+      public void run() {
+        mUpdateST = true;
+      }
+    });
   }
 
   public void onDestroy() {
