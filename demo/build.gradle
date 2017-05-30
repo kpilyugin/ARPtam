@@ -1,0 +1,38 @@
+apply plugin: 'com.android.application'
+
+repositories {
+  jcenter()
+  mavenLocal()
+  mavenCentral()
+}
+
+android {
+  compileSdkVersion 25
+  buildToolsVersion "25.0.1"
+  defaultConfig {
+    applicationId "mit.spbau.arptam"
+    minSdkVersion 21
+    targetSdkVersion 25
+    versionCode 1
+    versionName "1.0"
+  }
+  buildTypes {
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+    debug {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  compile project(path: ':ptam')
+  compile 'com.google.android.gms:play-services:10.0.1'
+  compile 'com.google.android.gms:play-services-location:10.0.1'
+  compile ('delightex.android:scene-graph-android:1.0-SNAPSHOT@aar') {
+    transitive = true
+  }
+}

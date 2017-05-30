@@ -1,0 +1,29 @@
+apply plugin: 'com.android.library'
+
+repositories {
+  jcenter()
+  mavenLocal()
+  mavenCentral()
+}
+
+android {
+  compileSdkVersion 25
+  buildToolsVersion "25.0.1"
+  defaultConfig {
+    ndk {
+      abiFilters /*'armeabi-v7a', */ 'x86'
+    }
+  }
+  externalNativeBuild {
+//    cmake {
+//      path "CMakeLists.txt"
+//    }
+    ndkBuild {
+      path "Android.mk"
+    }
+  }
+}
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+}
