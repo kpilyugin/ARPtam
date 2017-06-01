@@ -10,8 +10,11 @@ android {
   compileSdkVersion 25
   buildToolsVersion "25.0.1"
   defaultConfig {
-    ndk {
-      abiFilters /*'armeabi-v7a', */ 'x86'
+    externalNativeBuild {
+      ndkBuild {
+        abiFilters 'armeabi-v7a', 'x86'
+        arguments "APP_PLATFORM:=android-16"
+      }
     }
   }
   externalNativeBuild {
