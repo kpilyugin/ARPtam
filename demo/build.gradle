@@ -10,7 +10,7 @@ android {
   compileSdkVersion 25
   buildToolsVersion "25.0.1"
   defaultConfig {
-    applicationId "mit.spbau.arptam"
+    applicationId "mit.spbau.ptam.demo"
     minSdkVersion 21
     targetSdkVersion 25
     versionCode 1

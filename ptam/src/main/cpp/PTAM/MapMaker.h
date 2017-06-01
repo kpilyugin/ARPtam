@@ -43,7 +43,7 @@ struct MapMakerData {
         XMLElement* mmdata = doc->NewElement("MapMakerData");
 
         XMLElement* mkfs = doc->NewElement("MeasurementKFs");
-        mkfs->SetAttribute("size", sMeasurementKFs.size());
+        mkfs->SetAttribute("size", (unsigned) sMeasurementKFs.size());
 
         stringstream ss;
         //for(int i = 0; i < sMeasurementKFs.size(); i++)
@@ -55,7 +55,7 @@ struct MapMakerData {
         mmdata->InsertEndChild(mkfs);
 
         XMLElement* nrkfs = doc->NewElement("NeverRetryKFs");
-        nrkfs->SetAttribute("size", sNeverRetryKFs.size());
+        nrkfs->SetAttribute("size", (unsigned) sNeverRetryKFs.size());
 
         stringstream ss2;
         //for(int i = 0; i < sNeverRetryKFs.size(); i++)
