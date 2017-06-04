@@ -140,6 +140,7 @@ void Tracker::TrackFrame(CVD::Image<CVD::byte>& imFrame) {
             lastFPSTime = newTime;
             float newFPS = 1000.0 / diff;
             curFPS = (0.9 * curFPS) + (0.1 * newFPS);
+            mLastTrackingTime = now_ms() - newTime;
 
             mMessageForUser << "FPS: " << (int) curFPS << "  ";
 
@@ -1064,6 +1065,14 @@ KeyFrame Tracker::currentKeyFrame() {
 
 SE3<> Tracker::cameraPose() {
     return mse3CamFromWorld;
+}
+
+double Tracker::lastTrackingTime() {
+    return mLastTrackingTime;
+}
+
+float Tracker::trackingQuality() {
+    return mTrackingQuality == BAD ? 0 : mdTotalFracFound;
 }
 
 ImageRef TrackerData::irImageSize;  // Static member of TrackerData lives here

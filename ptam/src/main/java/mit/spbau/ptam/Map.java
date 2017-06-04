@@ -14,6 +14,10 @@ public class Map {
     return nGetNumPoints(mHandle);
   }
 
+  public int getNumKeyFrames() {
+    return nGetNumKeyFrames(mHandle);
+  }
+
   public MapPoint getPoint(int i) {
     long handle = nGetMapPoint(mHandle, i);
     MapPoint point = pointsMap.get(handle);
@@ -25,6 +29,8 @@ public class Map {
   }
 
   private static native int nGetNumPoints(long handle);
+
+  private static native int nGetNumKeyFrames(long handle);
 
   private static native long nGetMapPoint(long handle, int i);
 }

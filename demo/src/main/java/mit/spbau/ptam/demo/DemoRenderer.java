@@ -45,6 +45,7 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
   private final GLSurfaceView mView;
   private final PtamSystem mPtam;
+  private final PtamStatistics stats = new PtamStatistics();
 
   private CameraManager mCamera;
 
@@ -65,6 +66,7 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
     if (mCamera != null) {
       mCamera.onPause();
     }
+    stats.saveToFile();
   }
 
   public void setRenderModel(boolean renderModel) {
@@ -130,6 +132,7 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
     updateCameraPtam(ptamTm);
     graphics.setCamera(cameraMatrix.tm, cameraMatrix.getParameters());
     if (renderModel && modelRenderer != null) {
+      float quality = mPtam.getTrackingQuality();
       Transform.mulInverse(modelWorldTm, ptamTm, object.rootNode.nodeTm);
       M3x3.mul3x3(ptamTm, modelWorldTm.pos, object.rootNode.nodeTm.pos).add(ptamTm.pos);
       object.rootNode.evaluateWorldTm();
@@ -141,6 +144,8 @@ public class DemoRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
         return;
       }
       Vec3f pos = new Vec3f();
+      stats.onNewFrame(numPoints, mPtam.getMap().getNumKeyFrames(),
+          mPtam.getLastTrackingTime(), mPtam.getTrackingQuality());
       for (int i = 0; i < numPoints; i++) {
         MapPoint point = mPtam.getMap().getPoint(i);
         if (point.isTracked()) {

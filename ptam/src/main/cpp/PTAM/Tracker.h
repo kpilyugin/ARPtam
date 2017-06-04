@@ -60,6 +60,8 @@ public:
     void PokeTracker();
     std::list<Trail> getTrails();
     KeyFrame currentKeyFrame();
+    double lastTrackingTime();
+    float trackingQuality();
     SE3<> cameraPose();
 
 protected:
@@ -152,6 +154,7 @@ protected:
 
     float curFPS = 0;
     double lastFPSTime;
+    double mLastTrackingTime;
 
     int numGoodFrames;
 };

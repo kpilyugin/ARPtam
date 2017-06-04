@@ -1,33 +1,14 @@
 #ifndef __TIMING__
 #define __TIMING__
 
-#ifdef __ANDROID__
 static inline double
 now_ms(void) {
     struct timespec res;
     clock_gettime(CLOCK_REALTIME, &res);
     return 1000.0 * res.tv_sec + (double) res.tv_nsec / 1e6;
 }
-#else
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
-static inline double
-now_ms(void)
-{
-    LARGE_INTEGER frequency;
-    LARGE_INTEGER t1;
-    double elapsedTime;
-    QueryPerformanceFrequency(&frequency);
-
-    QueryPerformanceCounter(&t1);
-    elapsedTime = (float)(t1.QuadPart) / (frequency.QuadPart / 1000.0);
-
-    return elapsedTime;
-}
-#endif
-#endif
+//#define ENABLE_TIMING
 
 #ifdef ENABLE_TIMING
 #ifdef WIN32

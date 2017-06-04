@@ -128,6 +128,16 @@ Java_mit_spbau_ptam_PtamSystem_nGetPosition(JNIEnv* env, jclass type, jlong hand
     env->ReleaseFloatArrayElements(jPosition, position, 0);
 }
 
+JNIEXPORT jdouble JNICALL
+Java_mit_spbau_ptam_PtamSystem_nGetLastTrackingTime(JNIEnv* env, jclass type, jlong handle) {
+    return ptamSystem(handle)->tracker()->lastTrackingTime();
+}
+
+JNIEXPORT jfloat JNICALL
+Java_mit_spbau_ptam_PtamSystem_nGetTrackingQuality(JNIEnv* env, jclass type, jlong handle) {
+    return ptamSystem(handle)->tracker()->trackingQuality();
+}
+
 JNIEXPORT void JNICALL
 Java_mit_spbau_ptam_PtamSystem_nSaveMap(JNIEnv* env, jclass type, jlong handle, jstring fileName) {
     const char* name = env->GetStringUTFChars(fileName, false);
@@ -144,7 +154,12 @@ Java_mit_spbau_ptam_PtamSystem_nLoadMap(JNIEnv* env, jclass type, jlong handle, 
 
 JNIEXPORT jint JNICALL
 Java_mit_spbau_ptam_Map_nGetNumPoints(JNIEnv *env, jclass type, jlong handle) {
-    return reinterpret_cast<Map*>(handle)->vpPoints.size();
+    return (jint) reinterpret_cast<Map*>(handle)->vpPoints.size();
+}
+
+JNIEXPORT jint JNICALL
+Java_mit_spbau_ptam_Map_nGetNumKeyFrames(JNIEnv *env, jclass type, jlong handle) {
+    return (jint) reinterpret_cast<Map*>(handle)->vpKeyFrames.size();
 }
 
 JNIEXPORT jlong JNICALL

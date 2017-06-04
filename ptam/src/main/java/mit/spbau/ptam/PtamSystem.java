@@ -32,12 +32,12 @@ public class PtamSystem {
     nReset(mHandle);
   }
 
-  public void saveMap(String fileName) {
-    nSaveMap(mHandle, fileName);
+  public void saveMap(String folder) {
+    nSaveMap(mHandle, folder);
   }
 
-  public void loadMap(String fileName) {
-    nLoadMap(mHandle, fileName);
+  public void loadMap(String folder) {
+    nLoadMap(mHandle, folder);
   }
 
   public Map getMap() {
@@ -59,6 +59,14 @@ public class PtamSystem {
   public float[] getPosition() {
     nGetPosition(mHandle, mPosition);
     return mPosition;
+  }
+
+  public double getLastTrackingTime() {
+    return nGetLastTrackingTime(mHandle);
+  }
+
+  public float getTrackingQuality() {
+    return nGetTrackingQuality(mHandle);
   }
 
   public void onPause() {
@@ -88,6 +96,10 @@ public class PtamSystem {
   private static native void nGetRotation(long handle, float[] rotation);
 
   private static native void nGetPosition(long handle, float[] translation);
+
+  private static native double nGetLastTrackingTime(long handle);
+
+  private static native float nGetTrackingQuality(long handle);
 
   static {
     System.loadLibrary("PTAM");
